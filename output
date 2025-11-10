@@ -4,9 +4,9 @@ if result[2] != "":
     print("Rechenschritte:\n\n" + result[2] + "\n")
 
 if result[0] == 0:
-    print("Die beiden Ebenen sind echt parallel")
+    print("Die beiden Ebenen sind echt parallel.")
 elif result[0] == 1:
-    print("Die beiden Ebenen sind identisch")
+    print("Die beiden Ebenen sind identisch.")
 elif result[0] != 2:
     print("Fehler")
 else:
