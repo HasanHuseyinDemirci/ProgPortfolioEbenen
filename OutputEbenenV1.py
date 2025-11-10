@@ -1,0 +1,17 @@
+# result = (int(Index 0,1,2), str(Gleichung), str(Rechenschritte), bool(Filespeichern))
+
+def output(result):
+    if result[2] != "":
+        print("Rechenschritte:\n\n" + result[2] + "\n")
+    
+    if result[0] == 0:
+        print("Die beiden Ebenen sind echt parallel.")
+    elif result[0] == 1:
+        print("Die beiden Ebenen sind identisch.")
+    elif result[0] != 2:
+        print("Fehler")
+    else:
+        print("Die Schnittmenge der beiden Ebenen lautet:\n\n" + result[1])
+        if result[3] == True:
+            with open("output.txt", "w") as output:
+                output.write("Die Schnittmenge der beiden Ebenen lautet:\n\n" + result[1])
