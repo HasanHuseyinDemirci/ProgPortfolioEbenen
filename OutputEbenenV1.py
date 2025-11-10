@@ -1,17 +1,23 @@
 # result = (int(Index 0,1,2), str(Gleichung), str(Rechenschritte), bool(Filespeichern))
 
-def output(result):
-    if result[2] != "":
-        print("Rechenschritte:\n\n" + result[2] + "\n")
+NAME_OUTPUT_FILE = "output.txt"
+
+def output(ind, equation, calc_steps, file_save):
+    if calc_steps != "":
+        print("Rechenschritte:\n\n" + calc_steps + "\n")
     
-    if result[0] == 0:
+    if ind == 0:
         print("Die beiden Ebenen sind echt parallel.")
-    elif result[0] == 1:
+    elif ind == 1:
         print("Die beiden Ebenen sind identisch.")
-    elif result[0] != 2:
-        print("Fehler")
+    elif ind == 2:
+        print("Die Schnittmenge der beiden Ebenen lautet: " + equation)
     else:
-        print("Die Schnittmenge der beiden Ebenen lautet:\n\n" + result[1])
-        if result[3] == True:
-            with open("output.txt", "w") as output:
-                output.write("Die Schnittmenge der beiden Ebenen lautet:\n\n" + result[1])
+        print("Fehler: Indikator muss 0,1 oder 2 sein.")
+
+    if file_save:
+        try:
+            with open(NAME_OUTPUT_FILE, "w") as output:
+                output.write("Die Schnittmenge der beiden Ebenen lautet:" + equation)
+        except:
+            print(f"Fehler: {NAME_OUTPUT_FILE} nicht gefunden.")
