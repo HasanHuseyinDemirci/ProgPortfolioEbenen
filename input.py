@@ -20,8 +20,8 @@ def eingabe_ebene():
                     list_ebene[i] = list_ebene_index[i]
 
         frage_nach_ebene = input(f"""
-    ist dies Ebene? (j/n) 
-    {list_ebene[0]} x1 {list_ebene[1]} x2 {list_ebene[2]} x3 - {list_ebene[3]} = 0""")
+ist dies Ebene? (j/n) 
+{list_ebene[0]} x1 {list_ebene[1]} x2 {list_ebene[2]} x3 - {list_ebene[3]} = 0""")
         if frage_nach_ebene[0].lower() == "j":
             return ({"x": list_ebene[0],"y": list_ebene[1],"z": list_ebene[2],"d": list_ebene[3]})
             break
