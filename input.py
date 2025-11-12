@@ -3,9 +3,9 @@ import csv
 save_calculation_steps = None
 answer_yes = ["y", "yes", "ye", "yeah", "ja", "j"]
 answer_no = ["n", "no", "nope", "nein", "never"]
-index_unallowed = []
 
 def eingabe_ebene():
+    global save_calculation_steps, answer_yes, answer_no
     while True:
         list_ebene = [0, 0, 0, 0]
         list_ebene_index = ["x", "y", "z", "d"]
@@ -29,6 +29,8 @@ ist dies Ebene? (j/n)
         else:
             print("Versuche erneut")
 def main():
+    index_unallowed = []
+    global save_calculation_steps
     while True:
         print(
             """
@@ -90,8 +92,11 @@ def main():
                                 print("Ungültige Eingabe. Bitte gib zwei Zahlen ein, getrennt durch ein Komma.")    
                         ebenenueberpruefung = input(f"Du hast Ebene {eingabe_ebene1} und Ebene {eingabe_ebene2} ausgewählt. Passt das? (j/n) ")
                         if ebenenueberpruefung in answer_yes:
+                            e1 = {}
+                            e2 = {}
                             break
 
                 break
-
+        break
+    return e1, e2, save_calculation_steps
 main()
