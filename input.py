@@ -25,7 +25,7 @@ def input_plane_terminal():
                         break
                 except ValueError:
                     print("Bitte erneut versuchen!")
-                    list_plane[i] = list_plane_index[i]
+                    list_plane[i] = list_plane[i]
 
         ask_is_plane_correct = input(f"""
 ist dies Ebene? (j/n) 
