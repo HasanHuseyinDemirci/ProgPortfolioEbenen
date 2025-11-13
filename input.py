@@ -5,6 +5,9 @@ ANSWER_YES = ("y", "yes","ja","j")
 ANSWER_NO = ("n", "no", "nein")
 
 def input_plane_terminal():
+    """
+    Diese funktion ist in der Lage, eine ebene über die Command line als dictionary zu erschaffen und diese auch als solches zurück zu geben. 
+    """
     global ANSWER_YES, ANSWER_NO
     while True:
         list_plane = [0, 0, 0, 0]
@@ -32,7 +35,6 @@ ist dies Ebene? (j/n)
             continue
         elif ask_is_plane_correct.lower() == "j":
             return ({"x": list_plane[0],"y": list_plane[1],"z": list_plane[2],"d": list_plane[3]})
-            break
 
 def start_plane_calculator():
     print(
@@ -68,6 +70,8 @@ def input_plane_csv():
         try:
             with open("ebenen.csv", mode="r", encoding="utf-8") as csvfile:
                 reader = list(csv.reader(csvfile))
+                total_rows = len(reader)      
+
                 if len(reader) == 0:
                     print("Die CSV-Datei ist leer.")
                     return None, None
@@ -93,7 +97,6 @@ def input_plane_csv():
                     input_plane_csv_1 = int(input_choice_of_plane[0].strip())
                     input_plane_csv_2 = int(input_choice_of_plane[1].strip())
 
-                    total_rows = len(reader)      
 
                     if (
                             1 <= input_plane_csv_1 <= total_rows and
@@ -140,4 +143,3 @@ def main_input():
         break
     return e1, e2, save_calculation_steps
 
-input_plane_csv()
