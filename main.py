@@ -1,4 +1,4 @@
-import Ebene
+import Plane
 
 
 NAME_INPUT_FILE = ""
