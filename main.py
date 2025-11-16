@@ -69,8 +69,8 @@ def calc_gauss(e1, e2, vis_calc, file_save):
     steps = ""
 
      # Koeffizienten der Ebenen als Listen
-    row1 = list(e1.as_tuple())  # [a1, b1, c1, d1]
-    row2 = list(e2.as_tuple())  # [a2, b2, c2, d2]
+    row1 = e1.as_list()  # [a1, b1, c1, d1]
+    row2 = e2.as_list()  # [a2, b2, c2, d2]
 
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="Ausgangssystem:")

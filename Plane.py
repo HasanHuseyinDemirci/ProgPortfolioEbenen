@@ -26,9 +26,9 @@ class Plane:
 
     __rmul__ = __mul__  # ermöglicht: k · Ebene
 
-    def as_tuple(self):
+    def as_list(self):
         # Rückgabe der Koeffizienten als Tupel (für Gauss-Berechnung)
-        return (self.a, self.b, self.c, self.d)
+        return [self.a, self.b, self.c, self.d]
 
     def __str__(self):
         # Formatierte Ausgabe der Ebenengleichung für die Konsole

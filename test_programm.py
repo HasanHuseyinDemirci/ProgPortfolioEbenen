@@ -105,8 +105,8 @@ def format_system_state_test():
 ]
 
     for e1, e2, header, expected in tests:
-        row1 = list(e1.as_tuple())
-        row2 = list(e2.as_tuple())
+        row1 = e1.as_list()
+        row2 = e2.as_list()
 
         result = format_system_state(row1, row2, header)
 
