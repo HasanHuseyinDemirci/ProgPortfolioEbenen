@@ -3,7 +3,7 @@ from Plane import Plane
 
 NAME_INPUT_FILE = ""
 NAME_OUTPUT_FILE = "output.txt"
-DECIMAL_PLACES = 3
+# DECIMAL_PLACES = 3
 COEFF_WIDTH = 8
 
 
@@ -32,16 +32,16 @@ def format_system_state(row1, row2, header=None):
     a2, b2, c2, d2 = row2
 
     lines += (
-        f"{a1:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·x + "
-        f"{b1:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·y + "
-        f"{c1:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·z = "
-        f"{d1:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}\n"
-    )
+        f"{a1:>{COEFF_WIDTH}g}·x + "
+        f"{b1:>{COEFF_WIDTH}g}·y + "
+        f"{c1:>{COEFF_WIDTH}g}·z = "
+        f"{d1:>{COEFF_WIDTH}g}\n"
+    )      
     lines += (
-        f"{a2:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·x + "
-        f"{b2:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·y + "
-        f"{c2:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·z = "
-        f"{d2:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}\n\n"
+        f"{a2:>{COEFF_WIDTH}g}·x + "
+        f"{b2:>{COEFF_WIDTH}g}·y + "
+        f"{c2:>{COEFF_WIDTH}g}·z = "
+        f"{d2:>{COEFF_WIDTH}g}\n\n"
     )
     return lines
 
@@ -94,12 +94,11 @@ def calc_gauss(e1, e2, vis_calc, file_save):
     if row1[pivot_index] == 0 and row2[pivot_index] != 0:
         steps += (f"Zeilen werden vertauscht, da das führende Element in Zeile 1 = 0 ist (Spalte {pivot_name}).\n")
         row1, row2 = row2, row1
-        row1, row2 = row2, row1
         steps += format_system_state(row1, row2, header="Nach Zeilenvertauschung:")
 
      # Faktor k zur Elimination berechnen
     k = row2[pivot_index] / row1[pivot_index]
-    steps += f"Zeilenoperation: R2 := R2 - ({k:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}) · R1\n"
+    steps += f"Zeilenoperation: R2 := R2 - ({k:>{COEFF_WIDTH}g}) · R1\n"
 
     # Zeilenoperation anwenden: R2 = R2 − k·R1
     for i in range(4):
