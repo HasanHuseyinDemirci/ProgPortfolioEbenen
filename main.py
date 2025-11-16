@@ -273,3 +273,20 @@ if __name__ == "__main__":
 
     # Ergebnis ausgeben
     output_result(ind, equation, calc_steps, file_save)
+
+"""
+if __name__ == "__main__":
+    # Eingabedaten einlesen (entweder CLI oder Datei)
+    e1, e2, vis_calc, file_save = read_input()
+
+    # Gauß-Berechnung ausführen
+    result, calc_steps = calc_gauss(e1, e2, vis_calc)
+
+    # Ergebnis ausgeben
+    output_result(result, calc_steps)
+
+    if file_save:
+        save_output(result)
+
+
+"""
