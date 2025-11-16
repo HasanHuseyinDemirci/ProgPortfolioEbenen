@@ -3,7 +3,9 @@ from Plane import Plane
 
 NAME_INPUT_FILE = ""
 NAME_OUTPUT_FILE = "output.txt"
-DECIMAL_PLACCES = 3
+DECIMAL_PLACES = 3
+COEFF_WIDTH = 8
+
 
 def read_input():
     """
@@ -11,6 +13,37 @@ def read_input():
     Platzhalter für Entwicklung.
     """
     return Plane(1, 1, 1, 3), Plane(1, -1, 1, 1), True, False
+
+
+def format_system_state(row1, row2, header=None):
+    """
+    Formatiert den aktuellen Zustand des linearen Gleichungssystems
+    mit zwei Ebenengleichungen als Textblock für die Rechenschritte.
+
+    Parameter:
+        row1, row2: Listen oder Tupel der Form [a, b, c, d]
+        header (str oder None): Optionaler Überschriftstext
+    """
+    lines = ""
+    if header:
+        lines += header + "\n"
+
+    a1, b1, c1, d1 = row1
+    a2, b2, c2, d2 = row2
+
+    lines += (
+        f"{a1:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·x + "
+        f"{b1:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·y + "
+        f"{c1:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·z = "
+        f"{d1:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}\n"
+    )
+    lines += (
+        f"{a2:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·x + "
+        f"{b2:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·y + "
+        f"{c2:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}·z = "
+        f"{d2:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}\n\n"
+    )
+    return lines
 
 
 def calc_gauss(e1, e2, vis_calc, file_save):
@@ -35,64 +68,81 @@ def calc_gauss(e1, e2, vis_calc, file_save):
 
     steps = ""
 
-    # Ebenenkoeffizienten extrahieren
-    a1, b1, c1, d1 = e1.as_tuple()
-    a2, b2, c2, d2 = e2.as_tuple()
+     # Koeffizienten der Ebenen als Listen
+    row1 = list(e1.as_tuple())  # [a1, b1, c1, d1]
+    row2 = list(e2.as_tuple())  # [a2, b2, c2, d2]
 
-    # Rechenschritte protokollieren
-    steps += "Ausgangssystem:\n"
-    steps += f"{a1}·x + {b1}·y + {c1}·z = {d1}\n"
-    steps += f"{a2}·x + {b2}·y + {c2}·z = {d2}\n\n"
+    # Ausgangssystem speichern
+    steps += format_system_state(row1, row2, header="Ausgangssystem:")
 
     # -------------------------------
-    # 1. Gauß-Schritt zur Klassifikation
+    # 1. Gauß-Schritt: Pivot suchen und zweite Zeile eliminieren
     # -------------------------------
 
-    # Falls a1 = 0 und a2 ≠ 0: Zeilen vertauschen, damit wir mit x eliminieren können
-    if a1 == 0 and a2 != 0:
-        steps += "Zeilen werden vertauscht, da a1 = 0 und a2 ≠ 0.\n"
-        a1, b1, c1, d1, a2, b2, c2, d2 = a2, b2, c2, d2, a1, b1, c1, d1
-
-    # Zeilenoperation R2 := R2 - k·R1 (falls a1 ≠ 0)
-    if a1 != 0:
-        k = a2 / a1
-        steps += f"Zeilenoperation: R2 := R2 - ({k}) · R1\n"
-
-        a2n = a2 - k * a1
-        b2n = b2 - k * b1
-        c2n = c2 - k * c1
-        d2n = d2 - k * d1
-
-        steps += "Neues System nach der Zeilenoperation:\n"
-        steps += f"{a1}·x + {b1}·y + {c1}·z = {d1}\n"
-        steps += f"{a2n}·x + {b2n}·y + {c2n}·z = {d2n}\n\n"
+    # Pivot-Spalte bestimmen: zuerst x, dann y, sonst z
+    if row1[0] != 0 or row2[0] != 0: # 0 = x, 1 = y, 2 = z
+        pivot_index = 0
+    elif row1[1] != 0 or row2[1] != 0:
+        pivot_index = 1
     else:
-        # Sonderfall: beide a1 und a2 = 0 → wir vereinfachen nicht weiter
-        a2n, b2n, c2n, d2n = a2, b2, c2, d2
-        steps += "Kein Gauß-Schritt mit x möglich (a1 = a2 = 0).\n"
-        # TODO: Sonderfall Klärung
+        pivot_index = 2
 
-    # Entscheidung anhand der zweiten Zeile
-    if a2n == 0 and b2n == 0 and c2n == 0 and d2n != 0:
-        # 0x + 0y + 0z = d (d ≠ 0) → Widerspruch → keine Lösung
-        steps += "Zweite Zeile: 0x + 0y + 0z = d (d ≠ 0) → Ebenen sind echt parallel.\n"
-        return 0, "", (steps if vis_calc else ""), file_save
+    pivot_name = ["x", "y", "z"][pivot_index]
+    steps += (f"Führendes Element in Spalte '{pivot_name}' wird für den Gauß-Schritt verwendet.\n")
 
-    if a2n == 0 and b2n == 0 and c2n == 0 and d2n == 0:
-        # 0x + 0y + 0z = 0 → Zeilen linear abhängig → Ebenen identisch
-        steps += "Zweite Zeile: 0x + 0y + 0z = 0 → Ebenen sind identisch.\n"
-        return 1, "", (steps if vis_calc else ""), file_save
+    # Falls Pivot in Zeile 1 = 0 → Zeilen tauschen
+    if row1[pivot_index] == 0 and row2[pivot_index] != 0:
+        steps += (f"Zeilen werden vertauscht, da das führende Element in Zeile 1 = 0 ist (Spalte {pivot_name}).\n")
+        row1, row2 = row2, row1
+        row1, row2 = row2, row1
+        steps += format_system_state(row1, row2, header="Nach Zeilenvertauschung:")
 
-    # Ansonsten: zwei unabhängige Zeilen → Ebenen schneiden sich in einer Geraden
-    steps += "Zwei unabhängige Zeilen → Ebenen schneiden sich in einer Geraden.\n"
+     # Faktor k zur Elimination berechnen
+    k = row2[pivot_index] / row1[pivot_index]
+    steps += f"Zeilenoperation: R2 := R2 - ({k:>{COEFF_WIDTH}.{DECIMAL_PLACES}f}) · R1\n"
 
+    # Zeilenoperation anwenden: R2 = R2 − k·R1
+    for i in range(4):
+        row2[i] = row2[i] - k * row1[i]
 
-    # TODO: Dozent fragen – ist Geometrie (Kreuzprodukt) zur Geradenbestimmung erlaubt,
-    # oder muss die Parametergleichung rein über Gauß entstehen?
+    steps += format_system_state(row1, row2, header="Neues System nach der Zeilenoperation:")
 
+    # -------------------------------
+    # 2. Entscheidung: parallel / identisch / schneidend
+    # -------------------------------
 
-    # TODO: Implementierung der Geradengleichungsermittlung
-    pass
+    # Fall 1: 0x + 0y + 0z = d (d ≠ 0) → Widerspruch → keine Lösung → echt parallel
+    if row2[0] == 0 and row2[1] == 0 and row2[2] == 0 and row2[3] != 0:
+        steps += (
+            "Zweite Zeile: 0·x + 0·y + 0·z = d (d ≠ 0) → "
+            "Ebenen sind echt parallel (keine Schnittmenge).\n"
+        )
+        ind = 0
+        equation = ""
+
+    # Fall 2: 0x + 0y + 0z = 0 → Zeilen linear abhängig → Ebenen identisch
+    elif row2[0] == 0 and row2[1] == 0 and row2[2] == 0 and row2[3] == 0:
+        steps += (
+            "Zweite Zeile: 0·x + 0·y + 0·z = 0 → "
+            "Ebenen sind identisch (unendlich viele Lösungen).\n"
+        )
+        ind = 1
+        equation = ""
+
+    # Fall 3: zwei unabhängige Zeilen → Schnittgerade
+    else:
+        steps += (
+            "Zwei unabhängige Zeilen → Ebenen schneiden sich in einer Geraden.\n"
+        )
+        ind = 2
+
+        # TODO: Dozent fragen – ist Geometrie (Kreuzprodukt) zur Geradenbestimmung erlaubt,
+        # oder muss die Parametergleichung rein über Gauß entstehen?
+
+        # TODO: Implementierung der Geradengleichungsermittlung
+        equation = ""
+
+    return ind, equation, steps if vis_calc else "", file_save # Rechenschritte nur zurückgeben, falls vis_calc == True
 
 
 def output_result(ind, equation, calc_steps, file_save):
@@ -152,4 +202,3 @@ if __name__ == "__main__":
 
     # Ergebnis ausgeben
     output_result(ind, equation, calc_steps, file_save)
- 

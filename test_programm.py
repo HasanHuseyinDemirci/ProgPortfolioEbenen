@@ -1,8 +1,8 @@
-# test_programm.py
-
 from Plane import Plane
 from main import calc_gauss
 
+VIS_CALC = False
+FILE_SAVE = False
 
 def calc_gauss_test():
     """
@@ -16,25 +16,34 @@ def calc_gauss_test():
     """
 
     tests = [
-        # (Ebene 1, Ebene 2, expected_ind, expected_eq)
+        # Parallelfälle (ind = 0)
+        # Führendes Element in x
+        (Plane(-1, 2, 3, 10), Plane(-2, 4, 6, -5), 0, ""),
+        # Führendes Element in y
+        (Plane(0, 1, 2, 3), Plane(0, 2, 4, 8), 0, ""),
+        # Führendes Element in z
+        (Plane(0, 0, 1, 1), Plane(0, 0, 3, 5), 0, ""),
 
-        # Parallel
-        (Plane(1, 0, 0, 1), Plane(1, 0, 0, 2), 0, ""),
-        (Plane(2, 1, 0, 3), Plane(2, 1, 0, 5), 0, ""),
-        (Plane(3, -2, 1, 1), Plane(3, -2, 1, -4), 0, ""),
-        (Plane(4, 5, -2, 0), Plane(4, 5, -2, 7), 0, ""),
-        (Plane(-1, 2, 3, 10), Plane(-1, 2, 3, -5), 0, ""),
-
-        # Identisch
-        (Plane(2, -1, 3, 5), Plane(4, -2, 6, 10), 1, ""),
-        (Plane(-1, 4, -2, 8), Plane(-2, 8, -4, 16), 1, ""),
-        (Plane(3, 2, 1, 0), Plane(6, 4, 2, 0), 1, ""),
-        (Plane(5, -1, 0, 7), Plane(10, -2, 0, 14), 1, ""),
+        # Identische Ebenen (ind = 1)
+        # Führendes Element in x
         (Plane(1, 1, 1, 3), Plane(2, 2, 2, 6), 1, ""),
+        # Führendes Element in y
+        (Plane(0, 1, 2, 3), Plane(0, 2, 4, 6), 1, ""),
+        # Führendes Element in z
+        (Plane(0, 0, 2, 4), Plane(0, 0, 4, 8), 1, ""),
+
+        # Schneidende Ebenen (ind = 2)
+        # Führendes Element in x
+        (Plane(1, 0, 0, 0), Plane(0, 1, 0, 0), 2, ""),
+        # Führendes Element in y
+        (Plane(0, 1, 0, 0), Plane(0, 1, 1, 0), 2, ""),
+        # Führendes Element in z kann bei ind = 2 nicht auftreten (würde parallel oder identisch sein)
+        # Allgemeiner Fall
+        (Plane(2, 3, 1, 4), Plane(1, -2, 5, 3), 2, ""),
     ]
 
     for e1, e2, expected_ind, expected_eq in tests:
-        ind, eq, _, _ = calc_gauss(e1, e2, False, False)
+        ind, eq, steps, _ = calc_gauss(e1, e2, VIS_CALC, FILE_SAVE)
 
         if ind != expected_ind:
             print("Fehler: Falscher Indikator!")
@@ -45,6 +54,9 @@ def calc_gauss_test():
             print("Fehler: Falscher Gleichung!")
             print(f"Erwartet: '{expected_eq}', erhalten: '{eq}'")
             print(f"E1: {e1}\nE2: {e2}\n")
+
+        if VIS_CALC:
+            print(steps) # Optional: Rechenschritte anzeigen
 
 
 
