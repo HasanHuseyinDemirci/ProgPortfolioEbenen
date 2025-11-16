@@ -6,7 +6,11 @@ NAME_OUTPUT_FILE = "output.txt"
 DECIMAL_PLACCES = 3
 
 def read_input():
-    pass
+    """
+    TODO: CLI- oder Datei-Eingabe implementieren.
+    Platzhalter für Entwicklung.
+    """
+    return Plane(1, 1, 1, 3), Plane(1, -1, 1, 1), True, False
 
 
 def calc_gauss(e1, e2, vis_calc, file_save):
@@ -141,7 +145,7 @@ def output_result(ind, equation, calc_steps, file_save):
 
 if __name__ == "__main__":
     # Eingabedaten einlesen (entweder CLI oder Datei)
-    #e1, e2, vis_calc, file_save = read_input()
+    e1, e2, vis_calc, file_save = read_input()
 
     # Gauß-Berechnung ausführen
     ind, equation, calc_steps, file_save = calc_gauss(e1, e2, vis_calc, file_save)
