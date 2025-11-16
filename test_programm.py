@@ -10,10 +10,7 @@ def calc_gauss_test():
     Testet calc_gauss() für:
     - echt parallele Ebenen (ind = 0)
     - identische Ebenen (ind = 1)
-
-    TODO:
-    Sobald ind = 2 (Schnittgerade) implementiert ist,
-    expected_eq entsprechend anpassen und auf Nicht-Leere prüfen.
+    - schneidende Ebenen (ind = 2, nur Indikator; Geradengleichung wird später getestet)
     """
 
     tests = [
@@ -35,19 +32,19 @@ def calc_gauss_test():
 
         # Schneidende Ebenen (ind = 2)
         # Führendes Element in x
-        (Plane(1, 0, 0, 0), Plane(0, 1, 0, 0), 2, ""),
+        (Plane(1, 0, 0, 0), Plane(0, 1, 0, 0), 2, "g(t) = (0, 0, 0) + t · (-0, -0, 1)"),
         # Führendes Element in y
-        (Plane(0, 1, 0, 0), Plane(0, 1, 1, 0), 2, ""),
+        (Plane(0, 1, 0, 0), Plane(0, 1, 1, 0), 2, "g(t) = (0, 0, 0) + t · (1, -0, -0)"),
         # Führendes Element in z kann bei ind = 2 nicht auftreten (würde parallel oder identisch sein)
         # Allgemeiner Fall
-        (Plane(2, 3, 1, 4), Plane(1, -2, 5, 3), 2, ""),
+        (Plane(2, 3, 1, 4), Plane(1, -2, 5, 3), 2, "g(t) = (2.42857, -0.285714, 0) + t · (-2.42857, 1.28571, 1)"),
 
         # Zeilentausch nötig – führendes Element in x
-        # a1 = 0, a2 ≠ 0 → Spalte x wird Pivot, Zeilen werden vertauscht
-        (Plane(0, 3, 1, 2), Plane(5, 3, 1, 2), 2, ""),
+        # a1 = 0, a2 ≠ 0 → Spalte x liefert das führende Element, Zeilen werden vertauscht
+        (Plane(0, 3, 1, 2), Plane(5, 3, 1, 2), 2, "g(t) = (0, 0.666667, 0) + t · (-0, -0.333333, 1)"),
         # Zeilentausch nötig – führendes Element in y
-        # a1 = a2 = 0, b1 = 0, b2 ≠ 0 → Spalte y wird Pivot, Zeilen werden vertauscht
-        (Plane(0, 0, 1, 2), Plane(0, 3, 1, 2), 2, ""),
+        # a1 = a2 = 0, b1 = 0, b2 ≠ 0 → Spalte y liefert das führende Element, Zeilen werden vertauscht
+        (Plane(0, 0, 1, 2), Plane(0, 3, 1, 2), 2, "g(t) = (0, 0, 2) + t · (1, -0, -0)"),
     ]
 
     for e1, e2, expected_ind, expected_eq in tests:
