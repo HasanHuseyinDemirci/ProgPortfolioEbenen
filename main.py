@@ -91,7 +91,6 @@ def ask_user_calculation_steps_preferences():
 
 def input_plane_csv(): 
     index_unallowed = []
-    # Ebene aus CSV und Terminal auslesen
 
     while True:
         try:
@@ -106,13 +105,14 @@ def input_plane_csv():
                     if len(row) == 4:
                         try:
                             [math.isfinite(float(cell)) for cell in row]
+                            print(f"({index+1})", f"{row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
+
                         except ValueError:
-                            print(f"({index+1})", f"Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+                            print(f"(X)", f"Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
                             index_unallowed.append(index + 1)
                             continue
-                        print(f"({index+1})", f"{row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
                     else:
-                        print(f"(x)", f"Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+                        print(f"(X)", f"Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
                         index_unallowed.append(index + 1)
 
                 while True:
@@ -120,7 +120,10 @@ def input_plane_csv():
                     if (len(input_choice_of_plane) != 2 or not input_choice_of_plane[0].strip().isdigit() or not input_choice_of_plane[1].strip().isdigit()):
                         print("Bitte genau zwei Ebenennummern angeben.")
                         continue
-                                
+                    elif input_choice_of_plane[0].strip() == input_choice_of_plane[1].strip():
+                        print("Bitte zwei verschiedene Ebenennummern angeben.")
+                        continue
+
                     input_plane_csv_1 = int(input_choice_of_plane[0].strip())
                     input_plane_csv_2 = int(input_choice_of_plane[1].strip())
 
@@ -136,8 +139,8 @@ def input_plane_csv():
                         if plane_check.lower() in ANSWER_YES:
                             row1 = reader[input_plane_csv_1 - 1]
                             row2 = reader[input_plane_csv_2 - 1]
-                            e1 = {"x": float(row1[0]), "y": float(row1[1]), "z": float(row1[2]), "d": float(row1[3])}
-                            e2 = {"x": float(row2[0]), "y": float(row2[1]), "z": float(row2[2]), "d": float(row2[3])}
+                            e1 = row1
+                            e2 = row2
                             return e1, e2
                         else:
                             print("Bitte erneut versuchen.")
@@ -172,8 +175,8 @@ def read_input():
         else:
             print("Ungültige Eingabe. Bitte 'T' für Terminal oder 'CSV' für CSV-Datei eingeben.")
 
-    e1 = Plane(e1[0], e1[1], e1[2], e1[3])
-    e2 = Plane(e2[0], e2[1], e2[2], e2[3])
+    e1 = Plane(float(e1[0]), float(e1[1]), float(e1[2]), float(e1[3]))
+    e2 = Plane(float(e2[0]), float(e2[1]), float(e2[2]), float(e2[3]))
     
     return e1, e2, save_calculation_steps, False 
 
