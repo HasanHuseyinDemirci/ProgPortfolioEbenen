@@ -202,7 +202,7 @@ def format_system_state(row1, row2, header=None):
     return lines
 
 
-def det2(a, b, c, d): #TODO Testfunktion schreiben
+def det2(a, b, c, d):
     """
     Berechnet die Determinante einer 2x2-Matrix:
         | a  b |
