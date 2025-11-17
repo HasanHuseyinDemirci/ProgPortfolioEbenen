@@ -21,7 +21,7 @@ save_calculation_steps = None
 
 def input_plane_terminal():
     """
-    Diese funktion ist in der Lage, eine ebene über die Command line als dictionary zu erschaffen und diese auch als solches zurück zu geben. 
+    Diese Funktion ist in der Lage, eine Ebene über die Command line als dictionary zu erschaffen und diese auch als solches zurück zu geben. 
     """
     while True:
         list_plane = [0, 0, 0, 0]
@@ -376,65 +376,34 @@ def calc_gauss(e1, e2, vis_calc, file_save):
     return ind, equation, steps if vis_calc else "", file_save # Rechenschritte nur zurückgeben, falls vis_calc == True
 
 
-def output_result(ind, equation, calc_steps, file_save):
-    """
-    Gibt das Ergebnis der Gauß-Berechnung in der Konsole aus
-    und speichert es optional in einer Ausgabedatei.
-
-    Parameter:
-        ind (int):
-            0 = Die Ebenen sind echt parallel (keine Schnittmenge)
-            1 = Die Ebenen sind identisch (unendlich viele Lösungen)
-            2 = Die Ebenen schneiden sich in einer Geraden
-        equation (str):
-            Enthält die Gleichung der Schnittgeraden, falls ind == 2.
-            Ist ansonsten ein leerer String.
-        calc_steps (str):
-            Textdarstellung der Rechenschritte (falls vis_calc == True),
-            sonst ein leerer String.
-        file_save (bool):
-            Falls True, wird die Ausgabe zusätzlich in die Datei
-            NAME_OUTPUT_FILE geschrieben.
-
-    Rückgabe:
-        None
-    """
-
+def output_result(result, calc_steps):
+    print(result)
     if calc_steps != "":
-        print("Rechenschritte:\n\n" + calc_steps + "\n")
+        print(calc_steps)
+
     
-    if ind == 0:
-        print("Die beiden Ebenen sind echt parallel.")
-    elif ind == 1:
-        print("Die beiden Ebenen sind identisch.")
-    elif ind == 2:
-        print("Die Schnittmenge der beiden Ebenen lautet: " + equation)
-    else:
-        print("Fehler: Indikator muss 0,1 oder 2 sein.")
-
-    if file_save:
-        try:
-            with open(NAME_OUTPUT_FILE, "w") as f:
-                if ind == 2:
-                    f.write("Die Schnittmenge der beiden Ebenen lautet: " + equation)
-                else:
-                    # Alternativer Text, falls keine Gerade existiert
-                    f.write("Kein eindeutige Schnittgerade vorhanden.\n")
-        except Exception as e:
-            print(f"Fehler beim Speichern: {e}")
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
+
     # Eingabedaten einlesen (entweder CLI oder Datei)
-    e1, e2, vis_calc, file_save = read_input()
+    # e1, e2, vis_calc, file_save = read_input()
 
-    # Gauß-Berechnung ausführen
-    ind, equation, calc_steps, file_save = calc_gauss(e1, e2, vis_calc, file_save)
+    # # Gauß-Berechnung ausführen
+    # ind, equation, calc_steps, file_save = calc_gauss(e1, e2, vis_calc, file_save)
 
-    # Ergebnis ausgeben
-    output_result(ind, equation, calc_steps, file_save)
+    # # Ergebnis ausgeben
+    # output_result(ind, equation, calc_steps, file_save)
+def save_output_in_file(result):
+    try:
+        with open(NAME_OUTPUT_FILE, "w") as f:
+            f.write(result)
+           
+    except Exception as e:
+        print(f"Fehler beim Speichern: {e}")
 
-"""
+
+
 if __name__ == "__main__":
     # Eingabedaten einlesen (entweder CLI oder Datei)
     e1, e2, vis_calc, file_save = read_input()
@@ -449,4 +418,3 @@ if __name__ == "__main__":
         save_output_in_file(result)
 
 
-"""
