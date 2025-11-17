@@ -10,7 +10,6 @@ def input_plane_terminal():
     """
     Diese funktion ist in der Lage, eine ebene über die Command line als dictionary zu erschaffen und diese auch als solches zurück zu geben. 
     """
-    global ANSWER_YES, ANSWER_NO
     while True:
         list_plane = [0, 0, 0, 0]
         list_plane_index = ["x", "y", "z", "d"]
@@ -20,25 +19,32 @@ def input_plane_terminal():
                 try:
                     if list_plane[i] == "" or list_plane[i] in ("inf","-inf"):
                         print("Bitte erneut versuchen!")
-                        list_plane[i] = 0
                         continue
                     else:
                         list_plane[i] = float(list_plane[i])
                         break
                 except ValueError:
                     print("Bitte erneut versuchen!")
-                    list_plane[i] = 0
                     continue
-
+        if ask_user_if_plane_is_correct(list_plane):
+            return list_plane
+        else:
+            print("Beginnen wir von vorne!")
+        
+def ask_user_if_plane_is_correct(list_plane):
+    while True:
         ask_is_plane_correct = input(f"""
 ist dies Ebene? (j/n) 
-    {list_plane[0]} x1 + {list_plane[1]} x2 + {list_plane[2]} x3 - {list_plane[3]} = 0""" )
-        if ask_is_plane_correct.lower() not in (ANSWER_YES | ANSWER_NO):
-            print("Versuche erneut")
-            continue
-        elif ask_is_plane_correct.lower() in ANSWER_YES:
-            return ({"x": list_plane[0],"y": list_plane[1],"z": list_plane[2],"d": list_plane[3]})
-       
+{list_plane[0]} x1 + {list_plane[1]} x2 + {list_plane[2]} x3 {"-" if list_plane[3] <= 0 else "+"} {list_plane[3]} = 0
+""" )
+        if ask_is_plane_correct.lower().strip() in ANSWER_NO:
+            return False
+        elif ask_is_plane_correct.lower().strip() in ANSWER_YES:
+            return True  
+        else:
+            print("Bitte erneut versuchen! (j/n) ")
+            continue  
+
 
 def start_plane_calculator():
     print(
@@ -51,7 +57,7 @@ def start_plane_calculator():
             """)
 
 def ask_user_calculation_steps_preferences():
-    global save_calculation_steps, ANSWER_YES, ANSWER_NO
+    global save_calculation_steps
     while True:
         answer = input("Willst du die Rechenschritte Speichern? (j/n) ")
         if answer.lower() in ANSWER_YES:
@@ -68,7 +74,6 @@ def ask_user_calculation_steps_preferences():
 
 def input_plane_csv():
     index_unallowed = []
-    global ANSWER_YES, ANSWER_NO
 
     while True:
         try:
@@ -126,25 +131,25 @@ def input_plane_csv():
 def main_input():
     global save_calculation_steps
     start_plane_calculator()
-    save_calculation_steps = ask_user_calculation_steps_preferences()
+    ask_user_calculation_steps_preferences()
 
     while True:
         file_or_terminal = input("Bevor wir beginnen, willst du deine ebenen im Terminal eingeben oder aus einer CSV Datei auslesen? (T/CSV) ")
-        if file_or_terminal.upper() in ANSWER_TERMINAL:
+        if file_or_terminal.lower() in ANSWER_TERMINAL:
             print("Beginnen wir mit der ersten Ebene:")
             e1 = input_plane_terminal()
+            print("Sehr gut!")
             print("Jetzt die zweite Ebene:")
             e2 = input_plane_terminal()
-            print(e1,e2)
                 
             break
-        elif file_or_terminal.upper() in ANSWER_CSV:
+        elif file_or_terminal.lower() in ANSWER_CSV:
             e1, e2 = input_plane_csv()
             if e1 is None or e2 is None:
                 continue
             break
         else:
             print("Ungültige Eingabe. Bitte 'T' für Terminal oder 'CSV' für CSV-Datei eingeben.")
-    return e1, e2, save_calculation_steps
+    return e1, e2
 
 print(main_input())
