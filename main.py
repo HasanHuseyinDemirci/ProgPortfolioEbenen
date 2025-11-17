@@ -16,9 +16,6 @@ save_calculation_steps = None
 #TODO: Ausführichliche Kommentare
 #TODO: Testen
 
-
-
-
 def input_plane_terminal():
     """
     Diese Funktion ist in der Lage, eine Ebene über die Command line als dictionary zu erschaffen und diese auch als solches zurück zu geben. 
@@ -218,13 +215,13 @@ def calc_gauss(e1, e2, vis_calc):
 
     steps = "=== Gauß-Berechnung für zwei Ebenen ===\n"
 
-     # Koeffizienten der Ebenen als Listen
-    row1 = e1.as_list()  # [a1, b1, c1, d1]
-    row2 = e2.as_list()  # [a2, b2, c2, d2]
+    # Koeffizienten der Ebenen als Listen
+    a1, b1, c1, d1 = e1.as_list()
+    a2, b2, c2, d2 = e2.as_list()
 
-    # TODO: Schöner zu schreiben
-    row1[3] = -row1[3]
-    row2[3] = -row2[3]
+    # Wir wollen: a·x + b·y + c·z = -d
+    row1 = [a1, b1, c1, -d1]
+    row2 = [a2, b2, c2, -d2]
 
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="(1) Ausgangssystem:")
