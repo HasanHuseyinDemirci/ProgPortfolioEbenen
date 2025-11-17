@@ -2,7 +2,7 @@ from Plane import Plane
 from main import calc_gauss
 from main import format_system_state
 
-VIS_CALC = False
+VIS_CALC = True
 FILE_SAVE = False
 
 def calc_gauss_test():
