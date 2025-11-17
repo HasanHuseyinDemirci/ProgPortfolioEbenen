@@ -214,31 +214,17 @@ def det2(a, b, c, d): #TODO Testfunktion schreiben
     return a * d - b * c
 
 
-def calc_gauss(e1, e2, vis_calc, file_save):
-    """
-    Führt den Gauß-Algorithmus für zwei Ebenen durch.
-
-    Parameter:
-        e1 (Plane): Erste Ebene in der Form ax + by + cz = d
-        e2 (Plane): Zweite Ebene in der Form ax + by + cz = d
-        vis_calc (bool): Falls True, werden die Rechenschritte als Text ausgegeben
-        file_save (bool): Falls True, wird das Ergebnis zusätzlich in eine Datei gespeichert
-
-    Rückgabe:
-        ind (int): 
-            0 = Ebenen sind echt parallel (keine Schnittmenge)
-            1 = Ebenen sind identisch (unendlich viele Lösungen)
-            2 = Die Ebenen schneiden sich in einer Geraden
-        equation (str): Gleichung der Schnittgeraden (falls ind == 2, sonst "")
-        calc_steps (str): Textdarstellung der Rechenschritte (optional)
-        file_save (bool): Wird unverändert zurückgegeben
-    """
+def calc_gauss(e1, e2, vis_calc):
 
     steps = "=== Gauß-Berechnung für zwei Ebenen ===\n"
 
      # Koeffizienten der Ebenen als Listen
     row1 = e1.as_list()  # [a1, b1, c1, d1]
     row2 = e2.as_list()  # [a2, b2, c2, d2]
+
+    # TODO: Schöner zu schreiben
+    row1[3] = -row1[3]
+    row2[3] = -row2[3]
 
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="(1) Ausgangssystem:")
@@ -287,23 +273,21 @@ def calc_gauss(e1, e2, vis_calc, file_save):
     # Fall 1: 0x + 0y + 0z = d (d ≠ 0) → Widerspruch → keine Lösung → echt parallel
     if a2 == 0 and b2 == 0 and c2 == 0 and d2 != 0:
         steps += (
-            f"Zweite Zeile: 0·x + 0·y + 0·z = {d1:g} ({d1:g} ≠ 0) → Ebenen sind echt parallel (keine Schnittmenge).\n"
+            f"Zweite Zeile: 0·x + 0·y + 0·z = {d1:g} ({d1:g} ≠ 0)\n"
         )
-        ind = 0
-        equation = ""
+        result = "Die Ebenen sind echt parallel und haben keine Schnittmenge."
 
     # Fall 2: 0x + 0y + 0z = 0 → Zeilen linear abhängig → Ebenen identisch
     elif a2 == 0 and b2 == 0 and c2 == 0 and d2 == 0:
-        steps += "Zweite Zeile: 0·x + 0·y + 0·z = 0 → Ebenen sind identisch (unendlich viele Lösungen).\n"
-        ind = 1
-        equation = ""
+        steps += "Zweite Zeile: 0·x + 0·y + 0·z = 0 \n"
+        result = "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."
 
     # Fall 3: zwei unabhängige Zeilen → Schnittgerade
     else:
         steps += (
             "Zwei unabhängige Zeilen → Schnittgerade existiert.\n"
         )
-        ind = 2
+
 
         # -------------------------------
         # 3. Schnittgerade mit Determinanten (Cramersche Regel)
@@ -361,39 +345,27 @@ def calc_gauss(e1, e2, vis_calc, file_save):
 
         else:
             # Theoretisch dürfte dieser Fall bei ind = 2 nicht auftreten
-            steps += (
-                "WARNUNG: Alle 2x2-Minoren sind 0, obwohl zwei unabhängige Zeilen erwartet wurden.\n"
-            )
-            equation = ""
-            return ind, equation, steps if vis_calc else "", file_save
+
+            result = "WARNUNG: Alle 2x2-Minoren sind 0, obwohl zwei unabhängige Zeilen erwartet wurden.\n"
+            
+            return result, steps if vis_calc else "" # Rechenschritte nur zurückgeben, falls vis_calc == True
 
 
         # Parametergleichung der Schnittgeraden
         equation = f"g(t) = ({x0:g}, {y0:g}, {z0:g}) + t · ({vx:g}, {vy:g}, {vz:g})"
 
-        steps += f"\n(5) Schnittgerade (Parametergleichung):\n    {equation}\n"
+        result= f"Schnittgerade (Parametergleichung):\n    {equation}\n"
 
-    return ind, equation, steps if vis_calc else "", file_save # Rechenschritte nur zurückgeben, falls vis_calc == True
+    return result, steps if vis_calc else "" # Rechenschritte nur zurückgeben, falls vis_calc == True
 
 
 def output_result(result, calc_steps):
-    print(result)
     if calc_steps != "":
         print(calc_steps)
 
+    print(result)
+
     
-
-
-#if __name__ == "__main__":
-
-    # Eingabedaten einlesen (entweder CLI oder Datei)
-    # e1, e2, vis_calc, file_save = read_input()
-
-    # # Gauß-Berechnung ausführen
-    # ind, equation, calc_steps, file_save = calc_gauss(e1, e2, vis_calc, file_save)
-
-    # # Ergebnis ausgeben
-    # output_result(ind, equation, calc_steps, file_save)
 def save_output_in_file(result):
     try:
         with open(NAME_OUTPUT_FILE, "w") as f:
@@ -416,5 +388,3 @@ if __name__ == "__main__":
 
     if file_save:
         save_output_in_file(result)
-
-

@@ -7,7 +7,7 @@ class Plane:
         self.d = d
 
     def as_list(self):
-        # Rückgabe der Koeffizienten als Tupel (für Gauss-Berechnung)
+        # Rückgabe der Koeffizienten als List (für Gauss-Berechnung)
         return [self.a, self.b, self.c, self.d]
 
     def __str__(self):
@@ -17,3 +17,5 @@ class Plane:
             f"{self.c:+g}·z = "
             f"{self.d:g}"
         )
+    
+    

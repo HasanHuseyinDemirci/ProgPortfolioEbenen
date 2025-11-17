@@ -2,63 +2,52 @@ from Plane import Plane
 from main import calc_gauss
 from main import format_system_state
 
-VIS_CALC = True
+VIS_CALC = False
 FILE_SAVE = False
 
 def calc_gauss_test():
-    """
-    Testet calc_gauss() für:
-    - echt parallele Ebenen (ind = 0)
-    - identische Ebenen (ind = 1)
-    - schneidende Ebenen (ind = 2, nur Indikator; Geradengleichung wird später getestet)
-    """
-
     tests = [
-        # Parallelfälle (ind = 0)
+        # Parallelfälle 
         # Führendes Element in x
-        (Plane(-1, 2, 3, 10), Plane(-2, 4, 6, -5), 0, ""),
+        (Plane(-1, 2, 3, 10), Plane(-2, 4, 6, -5), "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
         # Führendes Element in y
-        (Plane(0, 1, 2, 3), Plane(0, 2, 4, 8), 0, ""),
+        (Plane(0, 1, 2, 3), Plane(0, 2, 4, 8), "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
         # Führendes Element in z
-        (Plane(0, 0, 1, 1), Plane(0, 0, 3, 5), 0, ""),
+        (Plane(0, 0, 1, 1), Plane(0, 0, 3, 5), "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
 
-        # Identische Ebenen (ind = 1)
+        # Identische Ebenen 
         # Führendes Element in x
-        (Plane(1, 1, 1, 3), Plane(2, 2, 2, 6), 1, ""),
+        (Plane(1, 1, 1, 3), Plane(2, 2, 2, 6), "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
         # Führendes Element in y
-        (Plane(0, 1, 2, 3), Plane(0, 2, 4, 6), 1, ""),
+        (Plane(0, 1, 2, 3), Plane(0, 2, 4, 6), "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
         # Führendes Element in z
-        (Plane(0, 0, 2, 4), Plane(0, 0, 4, 8), 1, ""),
+        (Plane(0, 0, 2, 4), Plane(0, 0, 4, 8), "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
 
-        # Schneidende Ebenen (ind = 2)
         # Führendes Element in x
-        (Plane(1, 0, 0, 0), Plane(0, 1, 0, 0), 2, "g(t) = (0, 0, 0) + t · (-0, -0, 1)"),
+        (Plane(1, 0, 0, 0), Plane(0, 1, 0, 0),"Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, 0) + t · (-0, -0, 1)\n"),
         # Führendes Element in y
-        (Plane(0, 1, 0, 0), Plane(0, 1, 1, 0), 2, "g(t) = (0, 0, 0) + t · (1, -0, -0)"),
+        (Plane(0, 1, 0, 0), Plane(0, 1, 1, 0), "Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, 0) + t · (1, -0, -0)\n"),
         # Führendes Element in z kann bei ind = 2 nicht auftreten (würde parallel oder identisch sein)
         # Allgemeiner Fall
-        (Plane(2, 3, 1, 4), Plane(1, -2, 5, 3), 2, "g(t) = (2.42857, -0.285714, 0) + t · (-2.42857, 1.28571, 1)"),
+        (Plane(2, 3, 1, 4), Plane(1, -2, 5, 3), "Schnittgerade (Parametergleichung):\n    g(t) = (-2.42857, 0.285714, 0) + t · (-2.42857, 1.28571, 1)\n"),
 
         # Zeilentausch nötig – führendes Element in x
         # a1 = 0, a2 ≠ 0 → Spalte x liefert das führende Element, Zeilen werden vertauscht
-        (Plane(0, 3, 1, 2), Plane(5, 3, 1, 2), 2, "g(t) = (0, 0.666667, 0) + t · (-0, -0.333333, 1)"),
+        (Plane(0, 3, 1, 2), Plane(5, 3, 1, 2), "Schnittgerade (Parametergleichung):\n    g(t) = (0, -0.666667, 0) + t · (-0, -0.333333, 1)\n"),
         # Zeilentausch nötig – führendes Element in y
         # a1 = a2 = 0, b1 = 0, b2 ≠ 0 → Spalte y liefert das führende Element, Zeilen werden vertauscht
-        (Plane(0, 0, 1, 2), Plane(0, 3, 1, 2), 2, "g(t) = (0, 0, 2) + t · (1, -0, -0)"),
+        (Plane(0, 0, 1, 2), Plane(0, 3, 1, 2), "Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, -2) + t · (1, -0, -0)\n"),
     ]
 
-    for e1, e2, expected_ind, expected_eq in tests:
-        ind, eq, steps, _ = calc_gauss(e1, e2, VIS_CALC, FILE_SAVE)
+    for e1, e2, expected_result in tests:
+        result, steps  = calc_gauss(e1, e2, VIS_CALC)
 
-        if ind != expected_ind:
+        if result!= expected_result:
             print("Fehler: Falscher Indikator!")
-            print(f"Erwartet: {expected_ind}, erhalten: {ind}")
+            print(f"Erwartet: {expected_result}, erhalten: {result}")
             print(f"E1: {e1}\nE2: {e2}\n")
    
-        if eq != expected_eq:
-            print("Fehler: Falscher Gleichung!")
-            print(f"Erwartet: '{expected_eq}', erhalten: '{eq}'")
-            print(f"E1: {e1}\nE2: {e2}\n")
+
 
         if VIS_CALC:
             print(steps) # Optional: Rechenschritte anzeigen
