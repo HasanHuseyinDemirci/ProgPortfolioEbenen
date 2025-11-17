@@ -1,6 +1,7 @@
 from Plane import Plane
 from main import calc_gauss
 from main import format_system_state
+from main import det2
 
 VIS_CALC = False
 FILE_SAVE = False
@@ -101,6 +102,21 @@ def format_system_state_test():
             print(f"Erwartet:\n{expected}")
             print(f"Erhalten:\n{result}")
 
+def det2_test():
+    tests = [
+        (1,1,1,1,0),
+        (4,1,1,4,15),
+        (0,0,0,0,0),
+        (0,0.1,-10,2,1)
+    ]
+    for a,b,c,d,expected_value in tests:
+        result = det2(a,b,c,d)
+        if result != expected_value:
+            print(f"Fehler: Inkorrekte Determinante.\nErwartet: {expected_value}\nErhalten: {result}.")
+
+
 if __name__ == "__main__":
     calc_gauss_test()
     format_system_state_test()
+    det2_test()
+
