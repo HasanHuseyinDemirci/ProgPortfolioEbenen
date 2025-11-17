@@ -1,22 +1,19 @@
 class Plane:
-    def __init__(self,x,y,z,b):
-        self.x = x
-        self.y = y
-        self.z = z
+    def __init__(self, a, b, c, d):
+        # Ebene in der Form: a·x + b·y + c·z = d
+        self.a = a
         self.b = b
-    def __add__(self,summand):
-        result = Plane(
-            self.x + summand.x,
-            self.y + summand.y,
-            self.z + summand.z,
-            self.b + summand.b
+        self.c = c
+        self.d = d
+
+    def as_list(self):
+        # Rückgabe der Koeffizienten als Tupel (für Gauss-Berechnung)
+        return [self.a, self.b, self.c, self.d]
+
+    def __str__(self):
+        return (
+            f"{self.a:g}·x "
+            f"{self.b:+g}·y "
+            f"{self.c:+g}·z = "
+            f"{self.d:g}"
         )
-        return result
-    def __mul__(self,factor):
-        result = Plane(
-            self.x * factor,
-            self.y * factor,
-            self.z * factor,
-            self.b * factor
-        )
-        return result
