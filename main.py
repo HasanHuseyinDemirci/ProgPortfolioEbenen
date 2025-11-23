@@ -17,14 +17,17 @@ ANSWER_CSV = {"csv", "c"}
 #TODO: Testen
 
 def start_plane_calculator():
+    print(
+            """
+    Willkommen beim Ebenenrechner!
+        
+    Dieses Programm ermöglicht es, die Schnittmenge mehrerer Ebenen zu berechnen.  
+    Du kannst die Ebenenkoeffizienten entweder über eine CSV-Datei einlesen oder direkt in der Kommandozeile eingeben.  
+    Anschließend wird die Schnittmenge berechnet, und du kannst wählen, ob das Ergebnis als CSV-Datei exportiert werden soll oder direkt in der Kommandozeile ausgegeben wird.
+            """)
 
 
 
-def input_plane_terminal():
-    """
-    Diese funktion ist in der Lage, eine ebene über die Command line als dictionary zu erschaffen und diese auch als solches zurück zu geben. 
-    """
-    while True:
 
 def is_valid_number(value):
     try:
@@ -138,57 +141,64 @@ def validate_csv_planes(reader):
             rows_unallowed.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
             index_unallowed.append(index+1)
             total_rows.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
-
+    
 
     if len(reader)-len(rows_unallowed) < 1:
         print("Die CSV-Datei muss mindestens zwei Ebenen enthalten.")
         return False
-    return reader, len(reader), total_rows, index_unallowed
+    return reader,rows_allowed,total_rows,index_allowed, index_unallowed
 
-def input_plane_csv(): 
+def load_csv_file(path):
+    try:
+        with open(path, mode="r", encoding="utf-8")as f:
+            return list(csv.reader(f))
+    except FileNotFoundError:
+        print("CSV-Datei wurde nicht gefunden")
+        return None
+    
+def choose_two_planes(total_rows,index_allowed, index_unallowed):
     while True:
-        try:
-            with open("ebenen.csv", mode="r", encoding="utf-8") as csvfile:
-                reader = list(csv.reader(csvfile))
-                validate_and_print_planes = list(validate_csv_planes(reader))
-                if validate_and_print_planes == False:
-                    return None,None
-                else:
-                    reader, total_rows, rows, index_unallowed = validate_and_print_planes
-                    print_csv_rows(rows)
-                while True:
-                    input_choice_of_plane =  input("Bitte wähle zwei Ebenen durch ihre Nummern aus, getrennt durch ein Komma: ").split(",")
-                    if (len(input_choice_of_plane) != 2 or not input_choice_of_plane[0].strip().isdigit() or not input_choice_of_plane[1].strip().isdigit()):
-                        print("Bitte genau zwei Ebenennummern angeben.")
-                        continue
-                    elif input_choice_of_plane[0].strip() == input_choice_of_plane[1].strip():
-                        print("Bitte zwei verschiedene Ebenennummern angeben.")
-                        continue
-
-                    input_plane_csv_1 = int(input_choice_of_plane[0].strip())
-                    input_plane_csv_2 = int(input_choice_of_plane[1].strip())
+        choice = input("Bitte wähle zwei Ebenen durch ihre Nummern aus, getrennt durch ein Komma: ").strip().split(",")
+        if len(choice) != 2:
+            print("Bitte genau zwei Ebenennummern angeben.")
+            continue
+        if not all(c.strip().isdigit() for c in choice):
+            print("Es sind nur Zahlen erlaubt")
+            continue
+        if choice[0] == choice[1]:
+            print("Du kannst nicht die selben ebenen wählen")
+            continue
+        if not (int(choice[0]) in index_allowed and int(choice[1]) in index_allowed):
+            print("\nDie angegebenen Ebenen sind außerhalb des gültigen Bereichs")
+            continue
+        
+        return int(choice[0]),int(choice[1])
+    
 
 
-                    if (
-                            1 <= input_plane_csv_1 <= total_rows and
-                            1 <= input_plane_csv_2 <= total_rows and
-                            input_plane_csv_1 not in index_unallowed and
-                            input_plane_csv_2 not in index_unallowed
-                        ):
+def confirm_choice(choice_1, choice_2):
+    confirm = input(f"Du hast Ebene {choice_1} und Ebene {choice_2} angegeben")
+    return confirm in ANSWER_YES
 
-                        plane_check = input("Du hast die Ebenen " + str(input_plane_csv_1) + " und " + str(input_plane_csv_2) + " ausgewählt. Ist das korrekt? (j/n) ")
-                        if plane_check.lower() in ANSWER_YES:
-                            row1 = reader[input_plane_csv_1 - 1]
-                            row2 = reader[input_plane_csv_2 - 1]
-                            e1 = row1
-                            e2 = row2
-                            return e1, e2
-                        else:
-                            print("Bitte erneut versuchen.")
-                            continue
-        except FileNotFoundError:
-            print("Die Datei 'ebenen.csv' wurde nicht gefunden. Bitte stelle sicher, dass sie im gleichen Verzeichnis wie dieses Programm liegt.")
-            return None, None
+def input_plane_csv():
+    reader = load_csv_file("ebenen.csv")
+    if reader is None:
+        return None, None
+    validated = validate_csv_planes(reader)
+    if validated is False:
+        return None, None
+    reader,rows_allowed, total_rows,index_allowed, index_unallowed = validated
+
+    print_csv_rows(total_rows)
+
+    while True:
+        choice_1 , choice_2 = choose_two_planes(total_rows,index_allowed, index_unallowed)
+        if confirm_choice(choice_1,choice_2):
+            return reader[choice_1-1], reader[choice_2-1]
+        else:
+            print("Bitte erneut versuchen. ")
+
+
 
 
 
