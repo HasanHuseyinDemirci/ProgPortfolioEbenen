@@ -16,6 +16,7 @@ ANSWER_CSV = {"csv", "c"}
 #TODO: Ausführichliche Kommentare
 #TODO: Testen
 
+def start_plane_calculator():
 
 
 
@@ -24,29 +25,24 @@ def input_plane_terminal():
     Diese funktion ist in der Lage, eine ebene über die Command line als dictionary zu erschaffen und diese auch als solches zurück zu geben. 
     """
     while True:
-        list_plane = [0, 0, 0, 0]
-        list_plane_index = ["x", "y", "z", "d"]
-        for i in range(len(list_plane)):
-            while True:
-                list_plane[i] = input(f"Bitte gib einen gültigen Wert für {list_plane_index[i]} an ")
-                try:
-                    if list_plane[i] == "" or not math.isfinite(float(list_plane[i])):
-                        print("Bitte erneut versuchen!")
-                        continue
-                    else:
-                        list_plane[i] = float(list_plane[i])
-                        break
-                except ValueError:
-                    print("Bitte erneut versuchen!")
-                    continue
-        if list_plane[0] == 0 and list_plane[1] == 0 and list_plane[2] == 0:
+
+def is_valid_number(value):
+    try:
+        if math.isfinite(float(value)) and value != "":
+            return True
+    except ValueError:
+        return False
+
+def is_valid_plane(list_plane):
+    if list_plane[0] == 0 and list_plane[1] == 0 and list_plane[2] == 0:
             print("Die Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
-            continue
+            return False
+    else:
+        if ask_user_if_plane_is_correct(list_plane):
+            return list_plane
         else:
-            if ask_user_if_plane_is_correct(list_plane):
-                return list_plane
-            else:
-                print("Beginnen wir von vorne!")
+            print("Beginnen wir von vorne!")
+      
             
 def ask_user_if_plane_is_correct(list_plane):
     while True:
@@ -63,20 +59,11 @@ ist dies Ebene? (j/n)
             continue  
 
 
-def start_plane_calculator():
-    print(
-            """
-    Willkommen beim Ebenenrechner!
-        
-    Dieses Programm ermöglicht es, die Schnittmenge mehrerer Ebenen zu berechnen.  
-    Du kannst die Ebenenkoeffizienten entweder über eine CSV-Datei einlesen oder direkt in der Kommandozeile eingeben.  
-    Anschließend wird die Schnittmenge berechnet, und du kannst wählen, ob das Ergebnis als CSV-Datei exportiert werden soll oder direkt in der Kommandozeile ausgegeben wird.
-            """)
 
-def ask_user_calculation_steps_preferences():
+def ask_user_to_show_calculation_steps():
     # global save_calculation_steps
     while True:
-        answer = input("Willst du die Rechenschritte Speichern? (j/n) ")
+        answer = input("Willst du die Rechenschritte Anzeigen? (j/n) ")
         if answer.lower() in ANSWER_YES:
             save_calculation_steps = True
             break
@@ -89,32 +76,86 @@ def ask_user_calculation_steps_preferences():
                 """)
     return save_calculation_steps
 
-def input_plane_csv(): 
-    index_unallowed = []
+def ask_user_to_save_calculation_steps():
+    # global save_calculation_steps
+    while True:
+        answer = input("Willst du die Rechenschritte in einer Datei speichern? (j/n) ")
+        if answer.lower() in ANSWER_YES:
+            save_calculation_steps = True
+            break
+        elif answer.lower() in ANSWER_NO:
+            save_calculation_steps = False
+            break
+        print("""
+        Bitte erneut versuchen!
+        Dies ist nicht Gültig bitte versuche es mit Ja oder mit Nein
+                """)
+    return save_calculation_steps
 
+
+def print_csv_rows(rows):
+    for row in rows:
+        print(row)
+
+def input_plane_terminal():
+    """
+    Diese funktion ist in der Lage, eine ebene über die Command line als dictionary zu erschaffen und diese auch als solches zurück zu geben. 
+    """
+    while True:
+        list_plane = [0, 0, 0, 0]
+        list_plane_index = ["x", "y", "z", "d"]
+        for i in range(len(list_plane)):
+            while True:
+                list_plane[i] = input(f"Bitte gib einen gültigen Wert für {list_plane_index[i]} an ")
+                if is_valid_number(list_plane[i]) == False:
+                    print("Bitte erneut versuchen!")
+                    continue
+                else:
+                    list_plane[i] = float(list_plane[i])
+                    break
+        if is_valid_plane(list_plane):
+            return list_plane
+
+def validate_csv_planes(reader):
+    rows_unallowed = []
+    index_unallowed = []
+    rows_allowed = []
+    index_allowed = []
+    total_rows = []
+    for index, row in enumerate(reader):
+        if len(row) == 4:
+            try:
+                [math.isfinite(float(cell)) for cell in row]
+                rows_allowed.append(f"\n({index+1})  {row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
+                index_allowed.append(index+1)
+                total_rows.append(f"\n({index+1})  {row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
+            except ValueError:
+                rows_unallowed.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+                index_unallowed.append(index+1)
+                total_rows.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+                continue
+        else:
+            rows_unallowed.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+            index_unallowed.append(index+1)
+            total_rows.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+
+
+    if len(reader)-len(rows_unallowed) < 1:
+        print("Die CSV-Datei muss mindestens zwei Ebenen enthalten.")
+        return False
+    return reader, len(reader), total_rows, index_unallowed
+
+def input_plane_csv(): 
     while True:
         try:
             with open("ebenen.csv", mode="r", encoding="utf-8") as csvfile:
                 reader = list(csv.reader(csvfile))
-                total_rows = len(reader)      
-
-                if total_rows < 2:
-                    print("Die CSV-Datei muss mindestens zwei Ebenen enthalten.")
-                    return None, None
-                for index, row in enumerate(reader):
-                    if len(row) == 4:
-                        try:
-                            [math.isfinite(float(cell)) for cell in row]
-                            print(f"({index+1})", f"{row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
-
-                        except ValueError:
-                            print(f"(X)", f"Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
-                            index_unallowed.append(index + 1)
-                            continue
-                    else:
-                        print(f"(X)", f"Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
-                        index_unallowed.append(index + 1)
-
+                validate_and_print_planes = list(validate_csv_planes(reader))
+                if validate_and_print_planes == False:
+                    return None,None
+                else:
+                    reader, total_rows, rows, index_unallowed = validate_and_print_planes
+                    print_csv_rows(rows)
                 while True:
                     input_choice_of_plane =  input("Bitte wähle zwei Ebenen durch ihre Nummern aus, getrennt durch ein Komma: ").split(",")
                     if (len(input_choice_of_plane) != 2 or not input_choice_of_plane[0].strip().isdigit() or not input_choice_of_plane[1].strip().isdigit()):
@@ -149,13 +190,17 @@ def input_plane_csv():
             print("Die Datei 'ebenen.csv' wurde nicht gefunden. Bitte stelle sicher, dass sie im gleichen Verzeichnis wie dieses Programm liegt.")
             return None, None
 
+
+
 def read_input():
     #TODO: NaN überprüfen
     #TODO auf 0x + 0y + 0z = d prüfen
     #TODO: Fragen nach Dateispeicherung
 
     start_plane_calculator()
-    save_calculation_steps = ask_user_calculation_steps_preferences()
+    show_calculation_steps = ask_user_to_show_calculation_steps()
+    save_calculation_steps = ask_user_to_save_calculation_steps()
+
 
     while True:
         file_or_terminal = input("Bevor wir beginnen, willst du deine ebenen im Terminal eingeben oder aus einer CSV Datei auslesen? (T/CSV) ")
@@ -170,15 +215,18 @@ def read_input():
         elif file_or_terminal.lower() in ANSWER_CSV:
             e1, e2 = input_plane_csv()
             if e1 is None or e2 is None:
+                print("\n Die von dir übergebene hat nicht genug Einträge")
                 continue
             break
         else:
             print("Ungültige Eingabe. Bitte 'T' für Terminal oder 'CSV' für CSV-Datei eingeben.")
+            continue
 
     e1 = Plane(float(e1[0]), float(e1[1]), float(e1[2]), float(e1[3]))
     e2 = Plane(float(e2[0]), float(e2[1]), float(e2[2]), float(e2[3]))
+
     
-    return e1, e2, save_calculation_steps, False 
+    return e1, e2, show_calculation_steps, save_calculation_steps 
 
 
 def format_system_state(row1, row2, header=None):
