@@ -10,34 +10,39 @@ def calc_gauss_test():
     tests = [
         # Parallelfälle 
         # Führendes Element in x
-        (Plane(-1, 2, 3, 10), Plane(-2, 4, 6, -5), "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
+        ([ -1,  2,  3, 10], [ -2,  4,  6, -5], "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
         # Führendes Element in y
-        (Plane(0, 1, 2, 3), Plane(0, 2, 4, 8), "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
+        ([  0,  1,  2,  3], [  0,  2,  4,  8], "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
         # Führendes Element in z
-        (Plane(0, 0, 1, 1), Plane(0, 0, 3, 5), "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
+        ([  0,  0,  1,  1], [  0,  0,  3,  5], "Die Ebenen sind echt parallel und haben keine Schnittmenge."),
 
         # Identische Ebenen 
         # Führendes Element in x
-        (Plane(1, 1, 1, 3), Plane(2, 2, 2, 6), "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
+        ([ 1, 1, 1, 3], [ 2, 2, 2, 6], "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
         # Führendes Element in y
-        (Plane(0, 1, 2, 3), Plane(0, 2, 4, 6), "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
+        ([ 0, 1, 2, 3], [ 0, 2, 4, 6], "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
         # Führendes Element in z
-        (Plane(0, 0, 2, 4), Plane(0, 0, 4, 8), "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
+        ([ 0, 0, 2, 4], [ 0, 0, 4, 8], "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."),
 
         # Führendes Element in x
-        (Plane(1, 0, 0, 0), Plane(0, 1, 0, 0),"Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, 0) + t · (-0, -0, 1)\n"),
+        ([1, 0, 0, 0], [0, 1, 0, 0],
+         "Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, 0) + t · (-0, -0, 1)\n"),
+
         # Führendes Element in y
-        (Plane(0, 1, 0, 0), Plane(0, 1, 1, 0), "Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, 0) + t · (1, -0, -0)\n"),
-        # Führendes Element in z kann bei ind = 2 nicht auftreten (würde parallel oder identisch sein)
+        ([0, 1, 0, 0], [0, 1, 1, 0],
+         "Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, 0) + t · (1, -0, -0)\n"),
+
         # Allgemeiner Fall
-        (Plane(2, 3, 1, 4), Plane(1, -2, 5, 3), "Schnittgerade (Parametergleichung):\n    g(t) = (-2.42857, 0.285714, 0) + t · (-2.42857, 1.28571, 1)\n"),
+        ([2, 3, 1, 4], [1, -2, 5, 3],
+         "Schnittgerade (Parametergleichung):\n    g(t) = (-2.42857, 0.285714, 0) + t · (-2.42857, 1.28571, 1)\n"),
 
         # Zeilentausch nötig – führendes Element in x
-        # a1 = 0, a2 ≠ 0 → Spalte x liefert das führende Element, Zeilen werden vertauscht
-        (Plane(0, 3, 1, 2), Plane(5, 3, 1, 2), "Schnittgerade (Parametergleichung):\n    g(t) = (0, -0.666667, 0) + t · (-0, -0.333333, 1)\n"),
+        ([0, 3, 1, 2], [5, 3, 1, 2],
+         "Schnittgerade (Parametergleichung):\n    g(t) = (0, -0.666667, 0) + t · (-0, -0.333333, 1)\n"),
+
         # Zeilentausch nötig – führendes Element in y
-        # a1 = a2 = 0, b1 = 0, b2 ≠ 0 → Spalte y liefert das führende Element, Zeilen werden vertauscht
-        (Plane(0, 0, 1, 2), Plane(0, 3, 1, 2), "Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, -2) + t · (1, -0, -0)\n"),
+        ([0, 0, 1, 2], [0, 3, 1, 2],
+         "Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, -2) + t · (1, -0, -0)\n"),
     ]
 
     for e1, e2, expected_result in tests:
