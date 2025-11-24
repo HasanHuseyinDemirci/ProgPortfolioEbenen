@@ -4,7 +4,7 @@ from main import det2
 from main import save_output_in_file
 
 
-VIS_CALC = False
+VIS_CALC = True
 FILE_SAVE = False
 NAME_OUTPUT_FILE = "output.txt"
 
@@ -67,8 +67,9 @@ def calc_gauss_test():
    
 
 
-        if VIS_CALC:
-            print(steps) # Optional: Rechenschritte anzeigen
+        if VIS_CALC: # Optional: Rechenschritte anzeigen
+            print(result)
+            print(steps) 
 
 def format_system_state_test():
     """
