@@ -16,6 +16,10 @@ class Plane:
             f"{self.b:+g}·y "
             f"{self.c:+g}·z = "
             f"{self.d:g}"
+<<<<<<< HEAD
         )
     
     
+=======
+        )
+>>>>>>> andreas

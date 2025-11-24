@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Portfolio-Projekt
 ## Schnittmenge zweier Ebenen im ℝ³
 ## Entwickler:
@@ -6,4 +7,7 @@
 ### Sebastian Rein
 ### Vitalii Solonychnyi
 
+=======
+# ProgPortfolioEbenen
+>>>>>>> andreas
 

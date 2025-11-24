@@ -1,0 +1,1 @@
+Die Schnittmenge der beiden Ebenen lautet: g(t) = (-2, 3, 0) + t · (1, -2, 1)
