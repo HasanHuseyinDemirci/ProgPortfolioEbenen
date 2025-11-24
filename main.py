@@ -306,8 +306,8 @@ def calc_gauss(e1, e2, vis_calc):
     steps = "=== Gauß-Berechnung für zwei Ebenen ===\n"
 
      # Koeffizienten der Ebenen als Listen
-    row1 = e1#.as_list()  # [a1, b1, c1, d1]
-    row2 = e2#.as_list()  # [a2, b2, c2, d2]
+    row1 = [e1[0], e1[1], e1[2], -e1[3]]
+    row2 = [e2[0], e2[1], e2[2], -e2[3]]
 
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="(1) Ausgangssystem:")
