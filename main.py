@@ -351,23 +351,17 @@ def calc_gauss(e1, e2, vis_calc):
     # Fall 1: 0x + 0y + 0z = d (d ≠ 0) → Widerspruch → keine Lösung → echt parallel
     if a2 == 0 and b2 == 0 and c2 == 0 and d2 != 0:
         steps += (
-            f"Zweite Zeile: 0·x + 0·y + 0·z = {d1:g} ({d1:g} ≠ 0) → Ebenen sind echt parallel (keine Schnittmenge).\n"
+            f"Zweite Zeile: 0·x + 0·y + 0·z = {d1:g} ({d1:g} ≠ 0)\n"
         )
-        ind = 0
-        equation = ""
+        result = "Die Ebenen sind echt parallel und haben keine Schnittmenge."
 
     # Fall 2: 0x + 0y + 0z = 0 → Zeilen linear abhängig → Ebenen identisch
     elif a2 == 0 and b2 == 0 and c2 == 0 and d2 == 0:
-        steps += "Zweite Zeile: 0·x + 0·y + 0·z = 0 → Ebenen sind identisch (unendlich viele Lösungen).\n"
-        ind = 1
-        equation = ""
+        steps += "Zweite Zeile: 0·x + 0·y + 0·z = 0 \n"
+        result = "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."
 
     # Fall 3: zwei unabhängige Zeilen → Schnittgerade
     else:
-        steps += (
-            "Zwei unabhängige Zeilen → Schnittgerade existiert.\n"
-        )
-        ind = 2
 
         # 3. Schnittgerade mit Determinanten (Cramersche Regel)
         
