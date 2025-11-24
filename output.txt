@@ -1,1 +1,2 @@
-Die Schnittmenge der beiden Ebenen lautet: g(t) = (-2, 3, 0) + t · (1, -2, 1)
+Schnittgerade (Parametergleichung):
+    g(t) = (-74.3333, 59.6667, 0) + t Â· (1, -2, 1)

@@ -1,4 +1,4 @@
-from Plane import Plane
+#from Plane import Plane
 import math
 import csv
 
@@ -283,7 +283,7 @@ def det2(a, b, c, d): #TODO Testfunktion schreiben
     return a * d - b * c
 
 
-def calc_gauss(e1, e2, vis_calc, file_save):
+def calc_gauss(e1, e2, vis_calc):
     """
     Führt den Gauß-Algorithmus für zwei Ebenen durch.
 
@@ -422,67 +422,20 @@ def calc_gauss(e1, e2, vis_calc, file_save):
 
         else:
             # Theoretisch dürfte dieser Fall bei ind = 2 nicht auftreten
-            steps += (
-                "WARNUNG: Alle 2x2-Minoren sind 0, obwohl zwei unabhängige Zeilen erwartet wurden.\n"
-            )
-            equation = ""
-            return ind, equation, steps if vis_calc else "", file_save
+
+            result = "WARNUNG: Alle 2x2-Minoren sind 0, obwohl zwei unabhängige Zeilen erwartet wurden.\n"
+            
+            return result, steps if vis_calc else "" # Rechenschritte nur zurückgeben, falls vis_calc == True
 
 
         # Parametergleichung der Schnittgeraden
         equation = f"g(t) = ({x0:g}, {y0:g}, {z0:g}) + t · ({vx:g}, {vy:g}, {vz:g})"
 
-        steps += f"\n(5) Schnittgerade (Parametergleichung):\n    {equation}\n"
+        result= f"Schnittgerade (Parametergleichung):\n    {equation}\n"
 
-    return ind, equation, steps if vis_calc else "", file_save # Rechenschritte nur zurückgeben, falls vis_calc == True
+    return result, steps if vis_calc else "" # Rechenschritte nur zurückgeben, falls vis_calc == True
 
 
-def output_result(ind, equation, calc_steps, file_save):
-    """
-    Gibt das Ergebnis der Gauß-Berechnung in der Konsole aus
-    und speichert es optional in einer Ausgabedatei.
-
-    Parameter:
-        ind (int):
-            0 = Die Ebenen sind echt parallel (keine Schnittmenge)
-            1 = Die Ebenen sind identisch (unendlich viele Lösungen)
-            2 = Die Ebenen schneiden sich in einer Geraden
-        equation (str):
-            Enthält die Gleichung der Schnittgeraden, falls ind == 2.
-            Ist ansonsten ein leerer String.
-        calc_steps (str):
-            Textdarstellung der Rechenschritte (falls vis_calc == True),
-            sonst ein leerer String.
-        file_save (bool):
-            Falls True, wird die Ausgabe zusätzlich in die Datei
-            NAME_OUTPUT_FILE geschrieben.
-
-    Rückgabe:
-        None
-    """
-
-    if calc_steps != "":
-        print("Rechenschritte:\n\n" + calc_steps + "\n")
-    
-    if ind == 0:
-        print("Die beiden Ebenen sind echt parallel.")
-    elif ind == 1:
-        print("Die beiden Ebenen sind identisch.")
-    elif ind == 2:
-        print("Die Schnittmenge der beiden Ebenen lautet: " + equation)
-    else:
-        print("Fehler: Indikator muss 0,1 oder 2 sein.")
-
-    if file_save:
-        try:
-            with open(NAME_OUTPUT_FILE, "w") as f:
-                if ind == 2:
-                    f.write("Die Schnittmenge der beiden Ebenen lautet: " + equation)
-                else:
-                    # Alternativer Text, falls keine Gerade existiert
-                    f.write("Kein eindeutige Schnittgerade vorhanden.\n")
-        except Exception as e:
-            print(f"Fehler beim Speichern: {e}")
 
 def output_result(result, calc_steps):
     if calc_steps != "":
