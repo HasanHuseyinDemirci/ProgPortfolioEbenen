@@ -1,4 +1,3 @@
-from Plane import Plane
 from main import calc_gauss
 from main import format_system_state
 from main import det2
