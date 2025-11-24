@@ -5,7 +5,7 @@ from main import det2
 from main import save_output_in_file
 
 
-VIS_CALC = False
+VIS_CALC = True
 FILE_SAVE = False
 NAME_OUTPUT_FILE = "output_test.txt"
 
@@ -99,11 +99,69 @@ def format_system_state_test():
     ),
 ]
 
-    for e1, e2, header, expected in tests:
-        row1 = e1.as_list()
-        row2 = e2.as_list()
+    for e1, e2, expected_result in tests:
+        result, steps  = calc_gauss(e1, e2, VIS_CALC)
 
-        result = format_system_state(row1, row2, header)
+        if result!= expected_result:
+            print("Fehler: Falscher Indikator!")
+            print(f"Erwartet: {expected_result}, erhalten: {result}")
+            print(f"E1: {e1}\nE2: {e2}\n")
+   
+        if VIS_CALC:
+            print(steps) # Optional: Rechenschritte anzeigen
+
+
+def det2_test():
+    tests = [
+        (1,1,1,1,0),
+        (4,1,1,4,15),
+        (0,0,0,0,0),
+        (0,0.1,-10,2,1)
+    ]
+    for a,b,c,d,expected_value in tests:
+        result = det2(a,b,c,d)
+        if result != expected_value:
+            print(f"Fehler: Inkorrekte Determinante.\nErwartet: {expected_value}\nErhalten: {result}.")
+
+def format_system_state_test():
+    """
+    Testet format_system_state() mit drei festen Fällen: 
+    """
+    tests = [
+    # 1 — Ganze Zahlen
+    (
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        "Ganzzahlig:",
+        "Ganzzahlig:\n"
+        "       1·x +        2·y +        3·z =        4\n"
+        "       5·x +        6·y +        7·z =        8\n\n"
+    ),
+
+    # 2 — Kurze Nachkommastellen
+    (
+        [1.1, 2.2, 3.3, 4.4],
+        [5.5, 6.6, 7.7, 8.8],
+        "Kurzkomma:",
+        "Kurzkomma:\n"
+        "     1.1·x +      2.2·y +      3.3·z =      4.4\n"
+        "     5.5·x +      6.6·y +      7.7·z =      8.8\n\n"
+    ),
+
+    # 3 — Lange Nachkommastellen
+    (
+        [1.234567, 2.999999, 3.141592, 4.000004],
+        [5.555555, 6.666666, 7.123456, 8.0000001],
+        "Langkomma:",
+        "Langkomma:\n"
+        " 1.23457·x +        3·y +  3.14159·z =        4\n"
+        " 5.55556·x +  6.66667·y +  7.12346·z =        8\n\n"
+    ),
+    ]
+
+    for e1, e2, header, expected in tests:
+
+        result = format_system_state(e1, e2, header)
 
         if result != expected:
             print("Fehler: Falsche Darstellung des LGS!")
@@ -139,4 +197,3 @@ if __name__ == "__main__":
     calc_gauss_test()
     format_system_state_test()
     det2_test()
-

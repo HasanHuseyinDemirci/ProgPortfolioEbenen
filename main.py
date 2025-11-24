@@ -306,8 +306,8 @@ def calc_gauss(e1, e2, vis_calc):
     steps = "=== Gauß-Berechnung für zwei Ebenen ===\n"
 
      # Koeffizienten der Ebenen als Listen
-    row1 = e1#.as_list()  # [a1, b1, c1, d1]
-    row2 = e2#.as_list()  # [a2, b2, c2, d2]
+    row1 = [e1[0], e1[1], e1[2], -e1[3]]
+    row2 = [e2[0], e2[1], e2[2], -e2[3]]
 
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="(1) Ausgangssystem:")
@@ -351,23 +351,17 @@ def calc_gauss(e1, e2, vis_calc):
     # Fall 1: 0x + 0y + 0z = d (d ≠ 0) → Widerspruch → keine Lösung → echt parallel
     if a2 == 0 and b2 == 0 and c2 == 0 and d2 != 0:
         steps += (
-            f"Zweite Zeile: 0·x + 0·y + 0·z = {d1:g} ({d1:g} ≠ 0) → Ebenen sind echt parallel (keine Schnittmenge).\n"
+            f"Zweite Zeile: 0·x + 0·y + 0·z = {d1:g} ({d1:g} ≠ 0)\n"
         )
-        ind = 0
-        equation = ""
+        result = "Die Ebenen sind echt parallel und haben keine Schnittmenge."
 
     # Fall 2: 0x + 0y + 0z = 0 → Zeilen linear abhängig → Ebenen identisch
     elif a2 == 0 and b2 == 0 and c2 == 0 and d2 == 0:
-        steps += "Zweite Zeile: 0·x + 0·y + 0·z = 0 → Ebenen sind identisch (unendlich viele Lösungen).\n"
-        ind = 1
-        equation = ""
+        steps += "Zweite Zeile: 0·x + 0·y + 0·z = 0 \n"
+        result = "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte."
 
     # Fall 3: zwei unabhängige Zeilen → Schnittgerade
     else:
-        steps += (
-            "Zwei unabhängige Zeilen → Schnittgerade existiert.\n"
-        )
-        ind = 2
 
         # 3. Schnittgerade mit Determinanten (Cramersche Regel)
         
