@@ -7,7 +7,7 @@ from main import save_output_in_file
 
 VIS_CALC = False
 FILE_SAVE = False
-NAME_OUTPUT_FILE = "output_test.txt"
+NAME_OUTPUT_FILE = "output.txt"
 
 def calc_gauss_test():
     tests = [
@@ -181,7 +181,9 @@ def det2_test():
             print(f"Fehler: Inkorrekte Determinante.\nErwartet: {expected_value}\nErhalten: {result}.")
 
 def save_output_in_file_test():
-    tests = ["abc", "def", "ghi"]
+    tests = ["Die Ebenen sind identisch und haben unendlich viele Schnittpunkte.",
+             "Die Ebenen sind echt parallel und haben keine Schnittmenge.",
+             "Schnittgerade (Parametergleichung): g(t) = (7, 0, -4) + t · (-2, 1, 0)"]
     for test in tests:
         save_output_in_file(test)
         try:
@@ -189,7 +191,7 @@ def save_output_in_file_test():
                 result = f.read()
         except Exception as e:
             print(f"Fehler beim Speichern: {e}")
-        if result != test:
+        if  result != test:
             print(f"Fehler: Fehler beim Speichern. \nErwartet: {test}\nErhalten: {result}.")
 
 
@@ -197,3 +199,4 @@ if __name__ == "__main__":
     calc_gauss_test()
     format_system_state_test()
     det2_test()
+    save_output_in_file_test()
