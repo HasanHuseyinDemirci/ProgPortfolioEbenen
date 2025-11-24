@@ -249,7 +249,7 @@ def format_system_state(row1, row2, header=None):
     mit zwei Ebenengleichungen als Textblock für die Rechenschritte.
 
     Parameter:
-        row1, row2: Listen oder Tupel der Form [a, b, c, d]
+        row1, row2: Listen der Form [a, b, c, d]
         header (str oder None): Optionaler Überschriftstext
     """
     lines = ""
@@ -285,22 +285,14 @@ def det2(a, b, c, d): #TODO Testfunktion schreiben
 
 def calc_gauss(e1, e2, vis_calc):
     """
-    Führt den Gauß-Algorithmus für zwei Ebenen durch.
+    Führt den Gauß-Algorithmus für zwei Ebenen durch und bestimmt ihre Lagebeziehung.
 
-    Parameter:
-        e1 (Plane): Erste Ebene in der Form ax + by + cz = d
-        e2 (Plane): Zweite Ebene in der Form ax + by + cz = d
-        vis_calc (bool): Falls True, werden die Rechenschritte als Text ausgegeben
-        file_save (bool): Falls True, wird das Ergebnis zusätzlich in eine Datei gespeichert
+    e1, e2: Sequenzen der Form [a, b, c, d] mit ax + by + cz + d = 0.
+    vis_calc: bool – Wenn True, werden die Rechenschritte als Text mit zurückgegeben.
 
     Rückgabe:
-        ind (int): 
-            0 = Ebenen sind echt parallel (keine Schnittmenge)
-            1 = Ebenen sind identisch (unendlich viele Lösungen)
-            2 = Die Ebenen schneiden sich in einer Geraden
-        equation (str): Gleichung der Schnittgeraden (falls ind == 2, sonst "")
-        calc_steps (str): Textdarstellung der Rechenschritte (optional)
-        file_save (bool): Wird unverändert zurückgegeben
+    result: str – Beschreibung der Lagebeziehung bzw. Parametergleichung der Schnittgeraden.
+    calc_steps: str – Formatierte Rechenschritte oder "" (wenn vis_calc False ist).
     """
 
     steps = "=== Gauß-Berechnung für zwei Ebenen ===\n"
@@ -432,6 +424,12 @@ def calc_gauss(e1, e2, vis_calc):
 
 
 def output_result(result, calc_steps):
+    """
+    Gibt optional Rechenschritte und danach das Ergebnis aus.
+
+    result: str – Endergebnis.
+    calc_steps: str – Rechenschritte (leer = keine Ausgabe).
+    """
     if calc_steps != "":
         print(calc_steps)
 
@@ -439,6 +437,11 @@ def output_result(result, calc_steps):
 
     
 def save_output_in_file(result):
+    """
+    Speichert das Ergebnis in die Ausgabedatei.
+
+    result: str – Text, der in die Datei geschrieben wird.
+    """
     try:
         with open(NAME_OUTPUT_FILE, "w") as f:
             f.write(result)
