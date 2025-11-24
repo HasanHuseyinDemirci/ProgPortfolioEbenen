@@ -1,2 +1,2 @@
 Schnittgerade (Parametergleichung):
-    g(t) = (-74.3333, 59.6667, 0) + t Â· (1, -2, 1)
+    g(t) = (1, 1, 0) + t · (4, -4, 1)
