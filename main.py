@@ -38,21 +38,18 @@ def is_valid_number(value):
 
 def is_valid_plane(list_plane):
     if list_plane[0] == 0 and list_plane[1] == 0 and list_plane[2] == 0:
-            print("Die Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
+            print("\nDie Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
             return False
     else:
         if ask_user_if_plane_is_correct(list_plane):
             return list_plane
         else:
-            print("Beginnen wir von vorne!")
+            print("\nBeginnen wir von vorne!")
       
             
 def ask_user_if_plane_is_correct(list_plane):
     while True:
-        ask_is_plane_correct = input(f"""
-ist dies Ebene? (j/n) 
-{list_plane[0]} x1 + {list_plane[1]} x2 + {list_plane[2]} x3 {"-" if list_plane[3] <= 0 else "+"} {list_plane[3]} = 0
-""" )
+        ask_is_plane_correct = input(f"\nist dies Ebene? (j/n) \n{list_plane[0]} x1 + {list_plane[1]} x2 + {list_plane[2]} x3 {"-" if list_plane[3] <= 0 else "+"} {list_plane[3]} = 0 " )
         if ask_is_plane_correct.lower().strip() in ANSWER_NO:
             return False
         elif ask_is_plane_correct.lower().strip() in ANSWER_YES:
@@ -73,26 +70,20 @@ def ask_user_to_show_calculation_steps():
         elif answer.lower() in ANSWER_NO:
             save_calculation_steps = False
             break
-        print("""
-        Bitte erneut versuchen!
-        Dies ist nicht Gültig bitte versuche es mit Ja oder mit Nein
-                """)
+        print("\nBitte erneut versuchen!\nDies ist nicht Gültig bitte versuche es mit Ja oder mit Nein ")
     return save_calculation_steps
 
 def ask_user_to_save_calculation_steps():
     # global save_calculation_steps
     while True:
-        answer = input("Willst du die Rechenschritte in einer Datei speichern? (j/n) ")
+        answer = input("Willst du das Ergebnis in einer Datei speichern? (j/n) ")
         if answer.lower() in ANSWER_YES:
             save_calculation_steps = True
             break
         elif answer.lower() in ANSWER_NO:
             save_calculation_steps = False
             break
-        print("""
-        Bitte erneut versuchen!
-        Dies ist nicht Gültig bitte versuche es mit Ja oder mit Nein
-                """)
+        print("\nBitte erneut versuchen!\nDies ist nicht Gültig bitte versuche es mit Ja oder mit Nein")
     return save_calculation_steps
 
 
@@ -109,9 +100,9 @@ def input_plane_terminal():
         list_plane_index = ["x", "y", "z", "d"]
         for i in range(len(list_plane)):
             while True:
-                list_plane[i] = input(f"Bitte gib einen gültigen Wert für {list_plane_index[i]} an ")
+                list_plane[i] = input(f"\nBitte gib einen gültigen Wert für {list_plane_index[i]} an ")
                 if is_valid_number(list_plane[i]) == False:
-                    print("Bitte erneut versuchen!")
+                    print("\nBitte erneut versuchen!")
                     continue
                 else:
                     list_plane[i] = float(list_plane[i])
@@ -129,22 +120,22 @@ def validate_csv_planes(reader):
         if len(row) == 4:
             try:
                 [math.isfinite(float(cell)) for cell in row]
-                rows_allowed.append(f"\n({index+1})  {row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
+                rows_allowed.append(f"({index+1})  {row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
                 index_allowed.append(index+1)
-                total_rows.append(f"\n({index+1})  {row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
+                total_rows.append(f"({index+1})  {row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(int(row[1]))}y {'-' if float(int(row[2])) <= 0 else '+'} {abs(int(row[2]))}z {'-' if float(row[3]) >= 0 else '+'} {abs(int(row[3]))} = 0")
             except ValueError:
-                rows_unallowed.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+                rows_unallowed.append(f"(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
                 index_unallowed.append(index+1)
-                total_rows.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+                total_rows.append(f"(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
                 continue
         else:
-            rows_unallowed.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+            rows_unallowed.append(f"(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
             index_unallowed.append(index+1)
-            total_rows.append(f"\n(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
+            total_rows.append(f"(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
     
 
     if len(reader)-len(rows_unallowed) < 1:
-        print("Die CSV-Datei muss mindestens zwei Ebenen enthalten.")
+        print("\nDie CSV-Datei muss mindestens zwei Ebenen enthalten.")
         return False
     return reader,rows_allowed,total_rows,index_allowed, index_unallowed
 
@@ -153,20 +144,20 @@ def load_csv_file(path):
         with open(path, mode="r", encoding="utf-8")as f:
             return list(csv.reader(f))
     except FileNotFoundError:
-        print("CSV-Datei wurde nicht gefunden")
+        print("\nCSV-Datei wurde nicht gefunden")
         return None
     
 def choose_two_planes(total_rows,index_allowed, index_unallowed):
     while True:
-        choice = input("Bitte wähle zwei Ebenen durch ihre Nummern aus, getrennt durch ein Komma: ").strip().split(",")
+        choice = input("\nBitte wähle zwei Ebenen durch ihre Nummern aus, getrennt durch ein Komma: ").strip().split(",")
         if len(choice) != 2:
-            print("Bitte genau zwei Ebenennummern angeben.")
+            print("\nBitte genau zwei Ebenennummern angeben.")
             continue
         if not all(c.strip().isdigit() for c in choice):
-            print("Es sind nur Zahlen erlaubt")
+            print("\nEs sind nur Zahlen erlaubt")
             continue
         if choice[0] == choice[1]:
-            print("Du kannst nicht die selben ebenen wählen")
+            print("\nDu kannst nicht die selben ebenen wählen")
             continue
         if not (int(choice[0]) in index_allowed and int(choice[1]) in index_allowed):
             print("\nDie angegebenen Ebenen sind außerhalb des gültigen Bereichs")
@@ -177,7 +168,7 @@ def choose_two_planes(total_rows,index_allowed, index_unallowed):
 
 
 def confirm_choice(choice_1, choice_2):
-    confirm = input(f"Du hast Ebene {choice_1} und Ebene {choice_2} angegeben")
+    confirm = input(f"\nDu hast Ebene {choice_1} und Ebene {choice_2} angegeben stimmt dies? (j/n)")
     return confirm in ANSWER_YES
 
 def input_plane_csv():
@@ -196,7 +187,7 @@ def input_plane_csv():
         if confirm_choice(choice_1,choice_2):
             return reader[choice_1-1], reader[choice_2-1]
         else:
-            print("Bitte erneut versuchen. ")
+            print("\nBitte erneut versuchen. ")
 
 
 
