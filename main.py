@@ -27,16 +27,16 @@ def start_plane_calculator():
             """)
 
 
-
-
 def is_valid_number(value):
     try:
-        if math.isfinite(float(value)) and value != "":
+        if math.isfinite(float(value)) and value != "": 
             return True
+        else:
+            return False
     except ValueError:
         return False
 
-def is_valid_plane(list_plane):
+def is_valid_plane(list_plane): #TODO Auseinanderziehen
     if list_plane[0] == 0 and list_plane[1] == 0 and list_plane[2] == 0:
             print("\nDie Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
             return False
@@ -64,27 +64,39 @@ def ask_user_to_show_calculation_steps():
     # global save_calculation_steps
     while True:
         answer = input("Willst du die Rechenschritte Anzeigen? (j/n) ")
-        if answer.lower() in ANSWER_YES:
-            save_calculation_steps = True
-            break
-        elif answer.lower() in ANSWER_NO:
-            save_calculation_steps = False
-            break
-        print("\nBitte erneut versuchen!\nDies ist nicht Gültig bitte versuche es mit Ja oder mit Nein ")
-    return save_calculation_steps
+        if answer.lower().strip() in ANSWER_YES:
+            return True
+        elif answer.lower().strip() in ANSWER_NO:
+             return False
+        else:
+            print("\nBitte erneut versuchen!\nDies ist nicht Gültig bitte versuche es mit Ja oder mit Nein ")
+            continue#
 
 def ask_user_to_save_calculation_steps():
     # global save_calculation_steps
     while True:
-        answer = input("Willst du das Ergebnis in einer Datei speichern? (j/n) ")
-        if answer.lower() in ANSWER_YES:
-            save_calculation_steps = True
-            break
-        elif answer.lower() in ANSWER_NO:
-            save_calculation_steps = False
-            break
-        print("\nBitte erneut versuchen!\nDies ist nicht Gültig bitte versuche es mit Ja oder mit Nein")
-    return save_calculation_steps
+        answer = input("Willst du die Rechenschritte Anzeigen? (j/n) ")
+        if answer.lower().strip() in ANSWER_YES:
+            return True
+        elif answer.lower().strip() in ANSWER_NO:
+             return False
+        else:
+            print("\nBitte erneut versuchen!\nDies ist nicht Gültig bitte versuche es mit Ja oder mit Nein ")
+            continue
+ # TODO 3 -> 1
+"""
+def ask_user(question):
+    while True:
+        answer = input(question)
+        if answer.lower().strip() in ANSWER_YES:
+            return True
+        elif answer.lower().strip() in ANSWER_NO:
+             return False
+        else:
+            print("\nBitte erneut versuchen!\nDies ist nicht Gültig bitte versuche es mit Ja oder mit Nein ")
+            continue
+
+"""
 
 
 def print_csv_rows(rows):
@@ -99,7 +111,7 @@ def input_plane_terminal():
         list_plane = [0, 0, 0, 0]
         list_plane_index = ["x", "y", "z", "d"]
         for i in range(len(list_plane)):
-            while True:
+            while True: #TODO Rauszeihen
                 list_plane[i] = input(f"\nBitte gib einen gültigen Wert für {list_plane_index[i]} an ")
                 if is_valid_number(list_plane[i]) == False:
                     print("\nBitte erneut versuchen!")
@@ -137,14 +149,14 @@ def validate_csv_planes(reader):
     if len(reader)-len(rows_unallowed) < 1:
         print("\nDie CSV-Datei muss mindestens zwei Ebenen enthalten.")
         return False
-    return reader,rows_allowed,total_rows,index_allowed, index_unallowed
+    return reader, total_rows,index_allowed, index_unallowed
 
 def load_csv_file(path):
     try:
         with open(path, mode="r", encoding="utf-8")as f:
             return list(csv.reader(f))
-    except FileNotFoundError:
-        print("\nCSV-Datei wurde nicht gefunden")
+    except Exception as e: #FileNotFoundError:
+        print(f"\n{e}") #TODO Ausführicher beschreiben
         return None
     
 def choose_two_planes(total_rows,index_allowed, index_unallowed):
@@ -176,9 +188,11 @@ def input_plane_csv():
     if reader is None:
         return None, None
     validated = validate_csv_planes(reader)
+
     if validated is False:
         return None, None
-    reader,rows_allowed, total_rows,index_allowed, index_unallowed = validated
+    
+    reader, total_rows,index_allowed, index_unallowed = validated
 
     print_csv_rows(total_rows)
 
@@ -195,7 +209,6 @@ def input_plane_csv():
 
 def read_input():
     #TODO: NaN überprüfen
-    #TODO auf 0x + 0y + 0z = d prüfen
     #TODO: Fragen nach Dateispeicherung
 
     start_plane_calculator()
@@ -223,8 +236,8 @@ def read_input():
             print("Ungültige Eingabe. Bitte 'T' für Terminal oder 'CSV' für CSV-Datei eingeben.")
             continue
 
-    e1 = Plane(float(e1[0]), float(e1[1]), float(e1[2]), float(e1[3]))
-    e2 = Plane(float(e2[0]), float(e2[1]), float(e2[2]), float(e2[3]))
+    #e1 = Plane(float(e1[0]), float(e1[1]), float(e1[2]), float(e1[3]))
+    #e2 = Plane(float(e2[0]), float(e2[1]), float(e2[2]), float(e2[3]))
 
     
     return e1, e2, show_calculation_steps, save_calculation_steps 
@@ -293,15 +306,13 @@ def calc_gauss(e1, e2, vis_calc, file_save):
     steps = "=== Gauß-Berechnung für zwei Ebenen ===\n"
 
      # Koeffizienten der Ebenen als Listen
-    row1 = e1.as_list()  # [a1, b1, c1, d1]
-    row2 = e2.as_list()  # [a2, b2, c2, d2]
+    row1 = e1#.as_list()  # [a1, b1, c1, d1]
+    row2 = e2#.as_list()  # [a2, b2, c2, d2]
 
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="(1) Ausgangssystem:")
 
-    # -------------------------------
     # 1. Gauß-Schritt: Pivot suchen und zweite Zeile eliminieren
-    # -------------------------------
 
     # Pivot-Spalte bestimmen: zuerst x, dann y, sonst z
     if row1[0] != 0 or row2[0] != 0: # 0 = x, 1 = y, 2 = z
@@ -330,10 +341,7 @@ def calc_gauss(e1, e2, vis_calc, file_save):
 
     steps += format_system_state(row1, row2, header="(3) Neues System nach der Zeilenoperation:")
     
-
-    # -------------------------------
     # 2. Entscheidung: parallel / identisch / schneidend
-    # -------------------------------
 
     steps += "(4) Klassifikation des Falls:\n"
 
@@ -361,11 +369,8 @@ def calc_gauss(e1, e2, vis_calc, file_save):
         )
         ind = 2
 
-        # -------------------------------
         # 3. Schnittgerade mit Determinanten (Cramersche Regel)
-        # -------------------------------
         
-
         # 2×2-Determinanten der Koeffizientenmatrix
         # Sie entscheiden, welche Variable frei gewählt werden kann.
         D_xy = det2(a1, b1, a2, b2)   # Determinante des Systems in x,y
@@ -373,7 +378,7 @@ def calc_gauss(e1, e2, vis_calc, file_save):
         D_yz = det2(b1, c1, b2, c2)   # Determinante des Systems in y,z
 
         # Fall 1:
-        # D_xy ≠ 0 → Das 2×2-System in x und y ist eindeutig lösbar
+        # D_xy != 0 → Das 2×2-System in x und y ist eindeutig lösbar
         if D_xy != 0:
             # Führendes Gleichungssystem in x,y – z wird Parameter t
             steps += "Wir wählen z als Parameter: z = t und lösen das 2x2-System in x und y.\n"
@@ -384,13 +389,13 @@ def calc_gauss(e1, e2, vis_calc, file_save):
             y0 = det2(a1, d1, a2, d2) / D_xy
             z0 = 0.0
 
-            # Für t ≠ 0 berechnen wir den Richtungsvektor (vx, vy, vz)
+            # Für t != 0 berechnen wir den Richtungsvektor (vx, vy, vz)
             vx = -det2(c1, b1, c2, b2) / D_xy
             vy = -det2(a1, c1, a2, c2) / D_xy
             vz = 1.0  # z = t
 
         # Fall 2:
-        # D_xz ≠ 0 → y = t ist sinnvoll
+        # D_xz != 0 → y = t ist sinnvoll
         elif D_xz != 0:
             steps += "Wir wählen y als Parameter: y = t und lösen das 2x2-System in x und z.\n"
 
@@ -403,7 +408,7 @@ def calc_gauss(e1, e2, vis_calc, file_save):
             vz = -det2(a1, b1, a2, b2) / D_xz
 
         # Fall 3:
-        # D_yz ≠ 0 → x = t ist sinnvoll
+        # D_yz != 0 → x = t ist sinnvoll
         elif D_yz != 0:
             steps += "Wir wählen x als Parameter: x = t und lösen das 2x2-System in y und z.\n"
 
