@@ -2,9 +2,12 @@ from Plane import Plane
 from main import calc_gauss
 from main import format_system_state
 from main import det2
+from main import save_output_in_file
+
 
 VIS_CALC = False
 FILE_SAVE = False
+NAME_OUTPUT_FILE = "output_test.txt"
 
 def calc_gauss_test():
     tests = [
@@ -176,6 +179,18 @@ def det2_test():
         result = det2(a,b,c,d)
         if result != expected_value:
             print(f"Fehler: Inkorrekte Determinante.\nErwartet: {expected_value}\nErhalten: {result}.")
+
+def save_output_in_file_test():
+    tests = ["abc", "def", "ghi"]
+    for test in tests:
+        save_output_in_file(test)
+        try:
+            with open(NAME_OUTPUT_FILE, "r") as f:
+                result = f.read()
+        except Exception as e:
+            print(f"Fehler beim Speichern: {e}")
+        if result != test:
+            print(f"Fehler: Fehler beim Speichern. \nErwartet: {test}\nErhalten: {result}.")
 
 
 if __name__ == "__main__":
