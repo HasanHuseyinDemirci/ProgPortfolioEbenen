@@ -3,7 +3,7 @@ from main import calc_gauss
 from main import format_system_state
 from main import det2
 
-VIS_CALC = True
+VIS_CALC = False
 FILE_SAVE = False
 
 def calc_gauss_test():
@@ -67,8 +67,8 @@ def format_system_state_test():
     tests = [
     # 1 — Ganze Zahlen
     (
-        Plane(1, 2, 3, 4),
-        Plane(5, 6, 7, 8),
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
         "Ganzzahlig:",
         "Ganzzahlig:\n"
         "       1·x +        2·y +        3·z =        4\n"
@@ -77,8 +77,8 @@ def format_system_state_test():
 
     # 2 — Kurze Nachkommastellen
     (
-        Plane(1.1, 2.2, 3.3, 4.4),
-        Plane(5.5, 6.6, 7.7, 8.8),
+        [1.1, 2.2, 3.3, 4.4],
+        [5.5, 6.6, 7.7, 8.8],
         "Kurzkomma:",
         "Kurzkomma:\n"
         "     1.1·x +      2.2·y +      3.3·z =      4.4\n"
@@ -87,8 +87,8 @@ def format_system_state_test():
 
     # 3 — Lange Nachkommastellen
     (
-        Plane(1.234567, 2.999999, 3.141592, 4.000004),
-        Plane(5.555555, 6.666666, 7.123456, 8.0000001),
+        [1.234567, 2.999999, 3.141592, 4.000004],
+        [5.555555, 6.666666, 7.123456, 8.0000001],
         "Langkomma:",
         "Langkomma:\n"
         " 1.23457·x +        3·y +  3.14159·z =        4\n"
