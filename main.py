@@ -34,17 +34,14 @@ def is_valid_number(value):
     """
     Prüft ob ein Wert in eine endliche Zahl umwandelbar ist.
     """
-
+    if  value == "":
+        return False
     try:
-        # Versucht, den Wert in einen float umzuwandeln.
-        # math.isfinite() prüft auf numerische Endlichkeit (nicht NaN oder Inf)
-        # Die Prüfung auf value != "" schließt leere Strings aus, da float("") einen ValueErrorauslösen würde, den wir abfangen aber ein leerer String per Definition keine gültige Zahl ist.
-        if math.isfinite(float(value)) and value != "": 
+        if math.isfinite(float(value)): 
             return True
         else:
             return False
     except ValueError:
-        # Wird ausgelöst beinicht numerischen Strings
         return False
     
 
@@ -57,17 +54,31 @@ def is_valid_plane(list_plane):
             print("\nDie Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
             return False
     else:
-        if ask_user_bool_question("Ist dies deine Ebene?:\n{row_to_str_terminal(list_plane)}\n"):
-            return list_plane
+        if ask_user_bool_question(f"Ist dies deine Ebene?:\n{row_to_str(list_plane)}\n"):
+            return True
         else:
             print("\nBeginnen wir von vorne!")
+            return False
       
             
 
-def row_to_str_terminal(list_plane):
-    return f"{list_plane[0]}x {'-' if float(list_plane[1]) <= 0 else '+'} {abs(float(list_plane[1]))}y {'-' if float(float(list_plane[2])) <= 0 else '+'} {abs(float(list_plane[2]))}z = {'-' if float(list_plane[3]) <= 0 else ''} {abs(float(list_plane[3]))}"
+def row_to_str(list_plane,index=None):
+    """    
+    Formatiert eine Ebenengleichung als String.
+    """
+    x,y,z,d = list_plane
+    y_sign = '-' if y < 0 else '+'
+    z_sign = '-' if z < 0 else '+'
+    d_sign = '-' if d < 0 else '+'
+    string = f"{x} x {y_sign} {abs(y)} y {z_sign} {abs(z)} z = {d_sign} {abs(d)}"
+
+    if index is not None:
+        return f"({index+1}) {string}"
+    return string
 
 
+def get_user_input(prompt):
+    return input(prompt).lower().strip()
 
 
 def ask_user_bool_question(question):
@@ -75,10 +86,10 @@ def ask_user_bool_question(question):
     Stellt dem Benutzer eine Ja/Nein-Frage und wartet auf eine gültige Antwort.
     """
     while True:
-        answer = input(question + " (j/n) ")
-        if answer.lower().strip() in ANSWER_YES:
+        answer = get_user_input(f"{question}(j/n) ")
+        if answer in ANSWER_YES:
             return True
-        elif answer.lower().strip() in ANSWER_NO:
+        elif answer in ANSWER_NO:
             return False
         else:
             print("\nBitte erneut versuchen!\nDies ist nicht gültig, bitte versuche es mit Ja oder Nein.")
@@ -100,11 +111,8 @@ def input_plane_terminal():
         list_plane = [0, 0, 0, 0]
         list_plane_index = ["x", "y", "z", "d"]
         for i in range(len(list_plane)):
-            while True:
-                if ask_user_for_values(i,list_plane_index,list_plane) == False:
-                    continue
-                else:
-                    break
+            while not ask_user_for_values(i, list_plane_index, list_plane):
+                pass
         if is_valid_plane(list_plane):
             return list_plane
         
@@ -114,29 +122,22 @@ def ask_user_for_values(i,list_plane_index,list_plane):
     Liest einen einzelnen Koeffizienten ein.
     """
     list_plane[i] = input(f"\nBitte gib einen gültigen Wert für {list_plane_index[i]} an ")
-    if is_valid_number(list_plane[i]) == False:
+    if not is_valid_number(list_plane[i]):
         print("\nBitte erneut versuchen!")
         return False
-    else:
-        list_plane[i] = float(list_plane[i])
-        return True
+    
+    list_plane[i] = float(list_plane[i])
+    return True
 
 
-def row_to_str_csv(index, row):
-    """
-    Formatiert eine Ebenengleichung als String.
-    """
-    return f"({index+1})  {row[0]}x {'-' if float(row[1]) <= 0 else '+'} {abs(float(row[1]))}y {'-' if float(float(row[2])) <= 0 else '+'} {abs(float(row[2]))}z = {'-' if float(row[3]) <= 0 else '+'} {abs(float(row[3]))}"
 
-
-def possible_row(row,rows_allowed, index_allowed, total_rows, index):
+def possible_row(row, index_allowed, total_rows, index):
     """
     Speichert und Formatiert eine gültige CSV-Zeile und deren Index
     """
-    rows_allowed.append(row_to_str_csv(index, row))
     index_allowed.append(index+1)
-    total_rows.append(row_to_str_csv(index, row))
-    return rows_allowed,index_allowed,total_rows
+    total_rows.append(row_to_str(row, index))
+    return index_allowed,total_rows
 
 def impossible_row(rows_unallowed, index_unallowed, total_rows, index):
     """
@@ -153,25 +154,23 @@ def validate_csv_planes(reader):
     """
     rows_unallowed = []
     index_unallowed = []
-    rows_allowed = []
     index_allowed = []
     total_rows = []
     for index, row in enumerate(reader):
-        if len(row) == 4:
-            try:
-                [math.isfinite(float(cell)) for cell in row]
-                rows_allowed, index_allowed, total_rows = possible_row(row,rows_allowed, index_allowed, total_rows, index)
-            except ValueError:
-                rows_unallowed,index_unallowed,total_rows = impossible_row(rows_unallowed, index_unallowed, total_rows, index)
-                # immposible_row = [row in total_rows if row not in possible_rows]
-                continue
-        else:
-            rows_unallowed,index_unallowed,total_rows = impossible_row(rows_unallowed, index_unallowed, total_rows, index)
+        try:
+            if len(row) != 4:
+                raise ValueError("Ungültige Zeile")
+            float_row = [float(cell) for cell in row]
+            if not all(math.isfinite(val) for val in float_row):
+                raise ValueError("Ungültige Zeile")
+            index_allowed,total_rows = possible_row(float_row,index_allowed, total_rows, index)
+        except ValueError:
+            rows_unallowed, index_unallowed, total_rows = impossible_row(rows_unallowed, index_unallowed,total_rows, index)
 
-    if len(reader)-len(rows_unallowed) < 1:
+    if len(index_allowed) <2:
         print("\nDie CSV-Datei muss mindestens zwei Ebenen enthalten.")
         return False
-    return reader, total_rows,index_allowed
+    return total_rows,index_allowed
 
 def load_csv_file(path):
     """
@@ -189,7 +188,7 @@ def choose_two_planes(index_allowed):
     Lässt den Nutzer zwei Ebenen wählen und überprüft ob sie Möglich sind.
     """
     while True:
-        choice = input("\nBitte wähle zwei Ebenen durch ihre Nummern aus, getrennt durch ein Komma: ").strip().split(",")
+        choice = input("Bitte gib zwei Ebenen mit einem , voneinaner getrennt ein ").split(",")
         if len(choice) != 2:
             print("\nBitte genau zwei Ebenennummern angeben.")
             continue
@@ -207,43 +206,43 @@ def choose_two_planes(index_allowed):
     
 
 
-def confirm_choice(choice_1, choice_2):# TODO mach zu question
-    confirm = input(f"\nDu hast Ebene {choice_1} und Ebene {choice_2} angegeben stimmt dies? (j/n)")
-    return confirm in ANSWER_YES
+def confirm_choice(choice_1, choice_2):
+    return ask_user_bool_question(f"\nDu hast Ebene {choice_1} und Ebene {choice_2} angegeben stimmt dies? ")
 
 def input_plane_csv():
     """
-    Ließt Ebenenkoeffizienten aus einer CSV-Dateiund validiert die Daten.
+    Liest Ebenenkoeffizienten aus einer CSV-Dateiund validiert die Daten.
     """
     reader = load_csv_file(NAME_INPUT_FILE)
     if reader is None:
+        print("\n Fehler: CSV-Datei konnte  nicht geladen werden.")
         return None, None
+    
     validated = validate_csv_planes(reader)
-
     if validated is False:
         return None, None
     
-    reader, total_rows,index_allowed= validated
-
+    total_rows,index_allowed= validated
     print_csv_rows(total_rows)
 
     while True:
         choice_1 , choice_2 = choose_two_planes(index_allowed)
-        if ask_user_bool_question(f"\nDu hast Ebene {choice_1} und Ebene {choice_2} angegeben stimmt dies?"):
-            return reader[choice_1-1], reader[choice_2-1]
+        if confirm_choice(choice_1,choice_2):
+            e1 = [float(x) for x in reader[choice_1-1]]
+            e2 = [float(x) for x in reader[choice_2-1]]
+            return e1,e2
         else:
             print("\nBitte erneut versuchen. ")
 
 
-
+def ask_terminal_or_csv():
+    return input("Bevor wir beginnen, willst du deine ebenen im Terminal eingeben oder aus einer CSV Datei auslesen? (T/CSV) ").lower().strip()
 
 
 def read_input():
     """
     Liest zwei Ebenenein und ermittelt die Programmeinstellungen.
     """
-    #TODO: NaN überprüfen
-    #TODO: Fragen nach Dateispeicherung
 
     start_plane_calculator()
     show_calculation_steps = ask_user_bool_question("Willst du die Rechenschritte im Terminal anzeigen ")
@@ -251,8 +250,8 @@ def read_input():
 
 
     while True:
-        file_or_terminal = input("Bevor wir beginnen, willst du deine ebenen im Terminal eingeben oder aus einer CSV Datei auslesen? (T/CSV) ")
-        if file_or_terminal.lower() in ANSWER_TERMINAL:
+        question_terminal_csv = ask_terminal_or_csv()
+        if question_terminal_csv in ANSWER_TERMINAL:
             print("Beginnen wir mit der ersten Ebene:")
             e1 = input_plane_terminal()
             print("Sehr gut!")
@@ -260,20 +259,16 @@ def read_input():
             e2 = input_plane_terminal()
                 
             break
-        elif file_or_terminal.lower() in ANSWER_CSV:
+        elif question_terminal_csv in ANSWER_CSV:
             e1, e2 = input_plane_csv()
             if e1 is None or e2 is None:
                 print("\n Die von dir übergebene hat nicht genug Einträge")
                 continue
-            e1 = [float(e1[0]), float(e1[1]), float(e1[2]), float(e1[3])]
-            e2 = [float(e2[0]), float(e2[1]), float(e2[2]), float(e2[3])]
             break
         else:
             print("Ungültige Eingabe. Bitte 'T' für Terminal oder 'CSV' für CSV-Datei eingeben.")
             continue
 
-    #e1 = Plane(float(e1[0]), float(e1[1]), float(e1[2]), float(e1[3]))
-    #e2 = Plane(float(e2[0]), float(e2[1]), float(e2[2]), float(e2[3]))
 
     
     return e1, e2, show_calculation_steps, save_output_in_file 
