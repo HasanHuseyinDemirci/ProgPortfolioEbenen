@@ -1,7 +1,150 @@
 from main import *
 
 VIS_CALC = False
+NAME_INPUT_FILE = "test_ebenen.csv"
 NAME_OUTPUT_FILE = "output.txt"
+
+
+def test_is_valid_number():
+    tests = [
+        ("", False),
+        ("inf", False),
+        ("-inf", False),
+        ("NaN", False),
+        ("0", True),
+        ("-1", True),
+        ("2", True),
+        ("Andreas", False),
+        ("3.14", True),
+        ("-0.5", True),
+        ("1e10", True)
+    ]
+
+    for val, expected in tests:
+        result = is_valid_number(val)
+        if result != expected:
+            print(f"FAIL: Eingabe '{val}' -> Ausgabe: {result}, erwartet: {expected}")
+
+def test_is_valid_plane():
+    tests = [
+        ([0, 0, 0, 1], False),
+        ([1, 0, 0, 1], True),
+        ([0, 1, 0, 1], True),
+        ([0, 0, 1, 1], True),
+        ([1, 2, 3, 4], True)
+    ]
+
+    for val, expected in tests:
+        result = is_valid_plane(val)
+        if result != expected:
+            print(f"FAIL: Eingabe {val} -> Ausgabe: {result}, erwartet: {expected}")
+
+def test_row_to_str():
+    tests = [
+        (([1, 2, 3, 4], None), "1 x + 2 y + 3 z = 4"),
+        (([1, -2, 3, -4], None), "1 x - 2 y + 3 z = -4"),
+        (([1.5, -2.25, 0, 4], 0), "(1) 1.5 x - 2.25 y + 0 z = 4"),
+        (([-1, 0, -3, 4], 1), "(2) -1 x + 0 y - 3 z = 4")
+    ]
+
+    for (plane, index), expected in tests:
+        result = row_to_str(plane, index)
+        if result != expected:
+            print(f"FAIL: Eingabe {plane}, {index} -> Ausgabe: {result}, erwartet: {expected}")
+
+def test_valid_rows():
+    tests = [
+        # ((row, index), (expected_index_allowed, expected_string_in_total_rows))
+        (([1, 2, 3, 4], 0), ([1], "(1) 1 x + 2 y + 3 z = 4")),
+        (([0.5, -2, 0, 1], 3), ([4], "(4) 0.5 x - 2 y + 0 z = 1"))
+    ]
+
+    for (row, index), (expected_idx, expected_str) in tests:
+        index_allowed = []
+        total_rows = []
+
+        idx_res, total_res = valid_rows(row, index_allowed, total_rows, index)
+
+        if idx_res != expected_idx or total_res != [expected_str]:
+            print(
+                f"FAIL: Eingabe {row}, index={index} -> "
+                f"index_allowed={idx_res}, total_rows={total_res}, "
+                f"erwartet: {expected_idx}, [{expected_str}]"
+            )
+
+def test_invalid_rows():
+    tests = [
+        # (index, expected_index_list, expected_string)
+        (1, [2], "(X)  Zeile 2 in der CSV-Datei ist ungültig und wird übersprungen."),
+        (4, [5], "(X)  Zeile 5 in der CSV-Datei ist ungültig und wird übersprungen.")
+    ]
+
+    for index, expected_idx_list, expected_str in tests:
+        rows_unallowed = []
+        index_unallowed = []
+        total_rows = []
+
+        rows_res, idx_res, tot_res = invalid_rows(rows_unallowed, index_unallowed, total_rows, index)
+
+        if idx_res != expected_idx_list or rows_res != [expected_str] or tot_res != [expected_str]:
+            print(
+                f"FAIL: invalid_rows(index={index}) -> "
+                f"index_unallowed={idx_res}, rows_unallowed={rows_res}, total_rows={tot_res}, "
+                f"erwartet: {expected_idx_list}, [{expected_str}]"
+            )
+
+def test_validate_csv_planes():
+    """Testet validate_csv_planes() als Gesamtkontrolle der CSV-Prüfung.
+
+    Es wird geprüft, ob index_allowed und die Anzahl der Einträge in total_rows
+    zu den erwarteten gültigen/ungültigen Zeilen passen.
+    """
+    tests = [
+        (
+            [
+                ["1", "2", "3", "4"],        # gültig
+                ["0", "0", "0", "1"],        # ungültig (0,0,0 bei x,y,z)
+                ["1", "2", "a", "4"],        # ungültig (kein Float)
+                ["5", "6", "7", "8", "9"],   # ungültig (zu viele Spalten)
+                ["-1.5", "2.0", "3", "0"],   # gültig
+            ],
+            [1, 5],  # erwartete gültige Zeilen (1-basiert!)
+        )
+    ]
+
+    for rows, expected_index_allowed in tests:
+        result = validate_csv_planes(rows)
+
+        if result is False:
+            print("FAIL: validate_csv_planes() hat False zurückgegeben, "
+                  "obwohl mindestens zwei gültige Ebenen vorhanden sind.")
+            continue
+
+        total_rows, index_allowed = result
+
+        if index_allowed != expected_index_allowed or len(total_rows) != len(rows):
+            print(
+                f"FAIL: validate_csv_planes() -> "
+                f"index_allowed={index_allowed}, total_rows_len={len(total_rows)}, "
+                f"erwartet: index_allowed={expected_index_allowed}, "
+                f"total_rows_len={len(rows)}"
+            )
+
+def test_load_csv_file():
+    rows = [
+        ["1", "2", "3", "4"],
+        ["0", "1", "0", "2"],
+    ]
+
+    with open(NAME_INPUT_FILE, "w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(",".join(row) + "\n")
+
+    result = load_csv_file(NAME_INPUT_FILE)
+
+    if result != rows:
+        print(f"FAIL: load_csv_file('{NAME_INPUT_FILE}') -> erhalten: {result}, erwartet: {rows}")
+
 
 def calc_gauss_test():
     """
@@ -39,16 +182,19 @@ def calc_gauss_test():
 
         # Allgemeiner Fall
         ([2, 3, 1, 4], [1, -2, 5, 3],
-         "Schnittgerade (Parametergleichung):\n    g(t) = (-2.42857, 0.285714, 0) + t · (-2.42857, 1.28571, 1)\n"),
+         "Schnittgerade (Parametergleichung):\n"
+         "    g(t) = (2.42857, -0.285714, 0) + t · (-2.42857, 1.28571, 1)\n"),
 
         # Zeilentausch nötig – führendes Element in x
         ([0, 3, 1, 2], [5, 3, 1, 2],
-         "Schnittgerade (Parametergleichung):\n    g(t) = (0, -0.666667, 0) + t · (-0, -0.333333, 1)\n"),
+         "Schnittgerade (Parametergleichung):\n"
+         "    g(t) = (0, 0.666667, 0) + t · (-0, -0.333333, 1)\n"),
 
         # Zeilentausch nötig – führendes Element in y
         ([0, 0, 1, 2], [0, 3, 1, 2],
-         "Schnittgerade (Parametergleichung):\n    g(t) = (0, 0, -2) + t · (1, -0, -0)\n"),
-    ]
+         "Schnittgerade (Parametergleichung):\n"
+         "    g(t) = (0, 0, 2) + t · (1, -0, -0)\n"),
+]
 
     for e1, e2, expected_result in tests:
         result, steps  = calc_gauss(e1, e2, VIS_CALC)
@@ -153,206 +299,15 @@ def save_output_in_file_test():
 
 
 if __name__ == "__main__":
+    test_is_valid_number()
+    test_is_valid_plane()
+    test_row_to_str()
+    test_valid_rows()
+    test_invalid_rows()
+    test_validate_csv_planes()
+    test_load_csv_file()
     calc_gauss_test()
     format_system_state_test()
     det2x2_test()
     save_output_in_file_test()
 
-
-
-def test_is_valid_number():
-    test_values = ["", "inf", "-inf", "NaN", "0", "-1", "2", "Andreas", "3.14", "-0.5", "1e10"]
-    expected_results = [False, False, False, False, True, True, True, False, True, True, True]
-
-    print("Testprogramm is_valid_number\n")
-    for val, expected in zip(test_values, expected_results):
-        result = is_valid_number(val)
-        if result == expected:
-            print(f"PASS: Eingabe '{val}' -> Ausgabe: {result}")
-        else:
-            print(f"FAIL: Eingabe '{val}' -> Ausgabe: {result}, erwartet: {expected}")
-
-def test_is_valid_plane():
-    test_values = [
-        [0, 0, 0, 1],
-        [1, 0, 0, 1],
-        [0, 1, 0, 1],
-        [0, 0, 1, 1],
-        [1, 2, 3, 4]
-    ]
-    expected_results = [False, True, True, True, True]
-
-    print("\nTestprogramm is_valid_plane\n")
-    for val, expected in zip(test_values, expected_results):
-        result = is_valid_plane(val)
-        if result == expected:
-            print(f"PASS: Eingabe {val} -> Ausgabe: {result}")
-        else:
-            print(f"FAIL: Eingabe {val} -> Ausgabe: {result}, erwartet: {expected}")
-
-def test_row_to_str():
-    test_values = [
-        ([1, 2, 3, 4], None),
-        ([1, -2, 3, -4], None),
-        ([1.5, -2.25, 0, 4], 0),
-        ([-1, 0, -3, 4], 1)
-    ]
-    expected_results = [
-        "1 x + 2 y + 3 z = + 4",
-        "1 x - 2 y + 3 z = - 4",
-        "(1) 1.5 x - 2.25 y + 0 z = + 4",
-        "(2) -1 x + 0 y - 3 z = + 4"
-    ]
-
-    print("\nTestprogramm row_to_str\n")
-    for (plane, index), expected in zip(test_values, expected_results):
-        result = row_to_str(plane, index)
-        if result == expected:
-            print(f"PASS: Eingabe {plane}, {index} -> Ausgabe: {result}")
-        else:
-            print(f"FAIL: Eingabe {plane}, {index} -> Ausgabe: {result}, erwartet: {expected}")
-
-    #TODO Testfunktionen:
-    #valid_rows ?
-    #invalid_rows ? 
-    #validate_csv_planes ?
-    #load_csv_file(path):
-
-def test_valid_rows():
-    """Testet valid_rows() mit gemischten gültigen und ungültigen CSV-Zeilen.
-
-    Erwartet wird, dass die Funktion die Gesamtanzahl der Zeilen
-    und die Indizes der gültigen Ebenen zurückgibt.
-    """
-    rows = [
-        ["1", "2", "3", "4"],          # gültig
-        ["0", "0", "0", "1"],          # ungültig: Ebene mit (0,0,0)
-        ["1", "2", "a", "4"],          # ungültig: nicht numerischer Eintrag
-        ["5", "6", "7", "8", "9"],    # ungültig: zu viele Spalten
-        ["-1.5", "2.0", "3", "0"],     # gültig
-    ]
-
-    print("\nTestprogramm valid_rows\n")
-    try:
-        total_rows, index_allowed = valid_rows(rows)
-    except Exception as e:
-        print(f"FAIL: valid_rows() wirft eine Exception: {e}")
-        return
-
-    print(f"Eingabezeilen: {len(rows)}")
-    print(f"Ausgabe total_rows: {total_rows}")
-    print(f"Ausgabe index_allowed: {index_allowed}")
-
-    expected_total_rows = len(rows)
-    expected_index_allowed = [0, 4]
-
-    if total_rows != expected_total_rows:
-        print(f"FAIL: total_rows inkorrekt. Erwartet: {expected_total_rows}, erhalten: {total_rows}")
-    if index_allowed != expected_index_allowed:
-        print(f"FAIL: index_allowed inkorrekt. Erwartet: {expected_index_allowed}, erhalten: {index_allowed}")
-
-
-def test_invalid_rows():
-    """Testet invalid_rows() basierend auf dem Ergebnis von valid_rows().
-
-    Es wird geprüft, ob die Funktion die ungültigen Zeilen korrekt erkennt.
-    """
-    rows = [
-        ["1", "2", "3", "4"],          # gültig
-        ["0", "0", "0", "1"],          # ungültig
-        ["1", "2", "a", "4"],          # ungültig
-        ["5", "6", "7", "8", "9"],    # ungültig
-        ["-1.5", "2.0", "3", "0"],     # gültig
-    ]
-
-    print("\nTestprogramm invalid_rows\n")
-    try:
-        total_rows, index_allowed = valid_rows(rows)
-        invalid_indices = invalid_rows(rows, index_allowed)
-    except Exception as e:
-        print(f"FAIL: invalid_rows()/valid_rows() wirft eine Exception: {e}")
-        return
-
-    expected_invalid = [1, 2, 3]
-
-    print(f"total_rows: {total_rows}")
-    print(f"index_allowed (gültig): {index_allowed}")
-    print(f"index_invalid (ungültig): {invalid_indices}")
-
-    if invalid_indices != expected_invalid:
-        print(f"FAIL: Ungültige Indizes inkorrekt. Erwartet: {expected_invalid}, erhalten: {invalid_indices}")
-
-
-def test_validate_csv_planes():
-    """Testet validate_csv_planes() als Gesamtkontrolle der CSV-Prüfung.
-
-    Es wird geprüft, ob total_rows und index_allowed konsistent zu den
-    erwarteten gültigen Zeilen sind.
-    """
-    rows = [
-        ["1", "2", "3", "4"],          # gültig
-        ["0", "0", "0", "1"],          # ungültig
-        ["1", "2", "a", "4"],          # ungültig
-        ["5", "6", "7", "8", "9"],    # ungültig
-        ["-1.5", "2.0", "3", "0"],     # gültig
-    ]
-
-    print("\nTestprogramm validate_csv_planes\n")
-    try:
-        total_rows, index_allowed = validate_csv_planes(rows)
-    except Exception as e:
-        print(f"FAIL: validate_csv_planes() wirft eine Exception: {e}")
-        return
-
-    expected_total_rows = len(rows)
-    expected_index_allowed = [0, 4]
-
-    print(f"Eingabezeilen: {len(rows)}")
-    print(f"Ausgabe total_rows: {total_rows}")
-    print(f"Ausgabe index_allowed: {index_allowed}")
-
-    if total_rows != expected_total_rows:
-        print(f"FAIL: total_rows inkorrekt. Erwartet: {expected_total_rows}, erhalten: {total_rows}")
-    if index_allowed != expected_index_allowed:
-        print(f"FAIL: index_allowed inkorrekt. Erwartet: {expected_index_allowed}, erhalten: {index_allowed}")
-
-
-def test_load_csv_file():
-    """Testet load_csv_file() mit einer kleinen Beispiel-CSV-Datei.
-
-    Es wird geprüft, ob die Funktion die Zeilen ohne Fehler einliest
-    und die Struktur der Daten (Anzahl Zeilen/Spalten) stimmt.
-    """
-    #import os
-
-    test_path = "test_ebenen.csv"
-    rows = [
-        ["1", "2", "3", "4"],
-        ["0", "1", "0", "2"],
-    ]
-
-    # Kleine Test-CSV schreiben (mit Semikolon als Trenner)
-    with open(test_path, "w", encoding="utf-8") as f:
-        for row in rows:
-            f.write(";".join(row) + "\n")
-
-    print("\nTestprogramm load_csv_file\n")
-    try:
-        result = load_csv_file(test_path)
-    except Exception as e:
-        print(f"FAIL: load_csv_file() wirft eine Exception: {e}")
-        os.remove(test_path)
-        return
-
-    # Aufräumen der Testdatei
-    os.remove(test_path)
-
-    if not isinstance(result, list) or len(result) != len(rows):
-        print(f"FAIL: Unerwartete Struktur. Erwartete Zeilenanzahl: {len(rows)}, erhalten: {len(result) if isinstance(result, list) else 'kein Listentyp'}")
-        return
-
-    if any(len(r) != len(rows[0]) for r in result):
-        print("FAIL: Unerwartete Spaltenanzahl in mindestens einer Zeile.")
-        return
-
-    print("PASS: CSV-Datei wurde erfolgreich und in erwarteter Struktur eingelesen.")

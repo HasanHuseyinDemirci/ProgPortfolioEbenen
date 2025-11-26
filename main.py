@@ -44,8 +44,7 @@ def is_valid_plane(list_plane):
     Gibt einen boolschen Wert zurück
     """
     if list_plane[0] == 0 and list_plane[1] == 0 and list_plane[2] == 0:
-            print("\nDie Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
-            return False
+        return False
     else:
         return True
     
@@ -103,7 +102,7 @@ def input_plane_terminal():
                 print("Beginnen wir von vorne!")
                 continue
         else:
-            print("\nBeginnen wir von vorne!")
+            print("\nDie Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
             continue
 
 def ask_user_for_values(coefficient):
