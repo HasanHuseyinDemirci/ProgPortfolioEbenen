@@ -90,12 +90,8 @@ def input_plane_terminal():
         list_plane_index = ["x", "y", "z", "d"]
         for i in range(len(list_plane)):
 
-            value = ask_user_for_values(i, list_plane_index)
+            value = ask_user_for_values(list_plane_index[i])
             list_plane[i] = float(value)
-
-
-            #while not ask_user_for_values(i, list_plane_index, list_plane):
-            #    pass
 
         if is_valid_plane(list_plane):
             if ask_user_bool_question(f"Ist dies deine Ebene?:\n{row_to_str(list_plane)}\n"):
@@ -107,12 +103,12 @@ def input_plane_terminal():
             print("\nBeginnen wir von vorne!")
             continue
 
-def ask_user_for_values(i, list_plane_index):
+def ask_user_for_values(koef):
     """
     Liest einen einzelnen Koeffizienten ein.
     """
     while True:
-        value = input(f"\nBitte gib einen gültigen Wert für {list_plane_index[i]} an ")
+        value = input(f"\nBitte gib einen gültigen Wert für {koef} an ")
 
         if is_valid_number(value):
             return value
