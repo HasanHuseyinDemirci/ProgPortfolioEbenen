@@ -4,7 +4,7 @@ from main import det2
 from main import save_output_in_file
 
 
-VIS_CALC = True
+VIS_CALC = False
 FILE_SAVE = False
 NAME_OUTPUT_FILE = "output.txt"
 
