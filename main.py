@@ -54,13 +54,9 @@ def is_valid_plane(list_plane):
             print("\nDie Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
             return False
     else:
-        if ask_user_bool_question(f"Ist dies deine Ebene?:\n{row_to_str(list_plane)}\n"):
-            return True
-        else:
-            print("\nBeginnen wir von vorne!")
-            return False
+        return True
       
-            
+
 
 def row_to_str(list_plane,index=None):
     """    
@@ -114,7 +110,14 @@ def input_plane_terminal():
             while not ask_user_for_values(i, list_plane_index, list_plane):
                 pass
         if is_valid_plane(list_plane):
-            return list_plane
+            if ask_user_bool_question(f"Ist dies deine Ebene?:\n{row_to_str(list_plane)}\n"):
+                return list_plane
+            else:
+                print("Beginnen wir vonvorne")
+                continue
+        else:
+            print("\nBeginnen wir von vorne!")
+            continue
         
 
 def ask_user_for_values(i,list_plane_index,list_plane):
