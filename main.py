@@ -154,6 +154,10 @@ def validate_csv_planes(reader):
             float_row = [float(cell) for cell in row]
             if not all(math.isfinite(val) for val in float_row):
                 raise ValueError("Ungültige Zeile")
+            
+            if float_row[0] == 0 and float_row[1] == 0 and float_row[2] == 0:
+                raise ValueError("Ungültige Zeile")
+
             index_allowed,total_rows = valid_rows(float_row,index_allowed, total_rows, index)
         except ValueError:
             rows_unallowed, index_unallowed, total_rows = invalid_rows(rows_unallowed, index_unallowed,total_rows, index)

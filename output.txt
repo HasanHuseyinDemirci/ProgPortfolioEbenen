@@ -1,2 +1,1 @@
-Schnittgerade (Parametergleichung):
-    g(t) = (-7519.53, 45134.2, 0) + t · (-4.27329, 4.13975, 1)
+Die Ebenen sind echt parallel und haben keine Schnittmenge.
