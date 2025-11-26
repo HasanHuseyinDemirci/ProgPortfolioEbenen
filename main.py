@@ -21,12 +21,12 @@ def greet_user():
         
     Dieses Programm ermöglicht es, die Schnittmenge mehrerer Ebenen zu berechnen.  
     Du kannst die Ebenenkoeffizienten entweder über eine CSV-Datei einlesen oder direkt in der Kommandozeile eingeben.  
-    Anschließend wird die Schnittmenge berechnet, und du kannst wählen, ob das Ergebnis als CSV-Datei exportiert werden soll oder direkt in der Kommandozeile ausgegeben wird.
+    Anschließend wird die Schnittmenge berechnet, und du kannst wählen, ob das Ergebnis als TXT-Datei exportiert werden soll oder direkt in der Kommandozeile ausgegeben wird.
             """)
 
 def is_valid_number(value):
     """
-    Prüft ob ein Wert in eine endliche Zahl umwandelbar ist.
+    Prüft, ob eine Eingabe eine valide Zahl ist.
     """
     if  value == "":
         return False
@@ -40,7 +40,7 @@ def is_valid_number(value):
     
 def is_valid_plane(list_plane):
     """
-    Prüft ob A,B,C nicht gleichzeitig 0 sind und lässt sich bestätigen, dass der Nutzer die richtige Ebene eingegeben hat.
+    Prüft ob die Koeffizienten A,B,C nicht gleichzeitig 0 sind
     """
     if list_plane[0] == 0 and list_plane[1] == 0 and list_plane[2] == 0:
             print("\nDie Ebene ist ungültig, da die Koeffizienten für x, y und z nicht alle 0 sein dürfen. Bitte erneut versuchen!")
@@ -50,28 +50,23 @@ def is_valid_plane(list_plane):
     
 def row_to_str(list_plane,index=None):
     """    
-    Formatiert eine Ebenengleichung als String.
+    Formatiert eine Ebenengleichung in einen String.
     """
-    x,y,z,d = list_plane
+    x, y, z, d = list_plane
     y_sign = '-' if y < 0 else '+'
     z_sign = '-' if z < 0 else '+'
-    d_sign = '-' if d < 0 else '+'
-    string = f"{x} x {y_sign} {abs(y)} y {z_sign} {abs(z)} z = {d_sign} {abs(d)}"
+    string = f"{x} x {y_sign} {abs(y)} y {z_sign} {abs(z)} z = {d}"
 
     if index is not None:
         return f"({index+1}) {string}"
     return string
-
-
-def get_user_input(prompt):
-    return input(prompt).lower().strip()
 
 def ask_user_bool_question(question):
     """
     Stellt dem Benutzer eine Ja/Nein-Frage und wartet auf eine gültige Antwort.
     """
     while True:
-        answer = get_user_input(f"{question}(j/n) ")
+        answer = input(f"{question}(j/n) ").lower().strip()
         if answer in ANSWER_YES:
             return True
         elif answer in ANSWER_NO:
@@ -88,14 +83,20 @@ def print_csv_rows(rows):
 
 def input_plane_terminal():
     """
-    Baut eine Ebene über Terminaleingaben zusammen
+    Gibt Liste [x, y, z, d] mit Ebenenkoeffizienten zurück
     """
     while True:
         list_plane = [0, 0, 0, 0]
         list_plane_index = ["x", "y", "z", "d"]
         for i in range(len(list_plane)):
-            while not ask_user_for_values(i, list_plane_index, list_plane):
-                pass
+
+            value = ask_user_for_values(i, list_plane_index)
+            list_plane[i] = float(value)
+
+
+            #while not ask_user_for_values(i, list_plane_index, list_plane):
+            #    pass
+
         if is_valid_plane(list_plane):
             if ask_user_bool_question(f"Ist dies deine Ebene?:\n{row_to_str(list_plane)}\n"):
                 return list_plane
@@ -106,17 +107,18 @@ def input_plane_terminal():
             print("\nBeginnen wir von vorne!")
             continue
 
-def ask_user_for_values(i,list_plane_index,list_plane):
+def ask_user_for_values(i, list_plane_index):
     """
     Liest einen einzelnen Koeffizienten ein.
     """
-    list_plane[i] = input(f"\nBitte gib einen gültigen Wert für {list_plane_index[i]} an ")
-    if not is_valid_number(list_plane[i]):
+    while True:
+        value = input(f"\nBitte gib einen gültigen Wert für {list_plane_index[i]} an ")
+
+        if is_valid_number(value):
+            return value
+            
         print("\nBitte erneut versuchen!")
-        return False
     
-    list_plane[i] = float(list_plane[i])
-    return True
 
 def valid_rows(row, index_allowed, total_rows, index):
     """
@@ -124,7 +126,7 @@ def valid_rows(row, index_allowed, total_rows, index):
     """
     index_allowed.append(index+1)
     total_rows.append(row_to_str(row, index))
-    return index_allowed,total_rows
+    return index_allowed, total_rows
 
 def invalid_rows(rows_unallowed, index_unallowed, total_rows, index):
     """
@@ -237,7 +239,7 @@ def read_input():
             e1 = input_plane_terminal()
 
             print_congrats()
-            
+
             print("Jetzt die zweite Ebene:")
             e2 = input_plane_terminal()
                 
@@ -245,7 +247,7 @@ def read_input():
         elif question_terminal_csv in ANSWER_CSV:
             e1, e2 = input_plane_csv()
             if e1 is None or e2 is None:
-                print("\n Die von dir übergebene hat nicht genug Einträge")
+                print("\nDie von dir übergebene hat nicht genug Einträge")
                 continue
             break
         else:
@@ -303,7 +305,7 @@ def det2(a, b, c, d): #TODO Testfunktion schreiben
     return a * d - b * c
 
 
-def calc_gauss(e1, e2, vis_calc):
+def calc_gauss(row1, row2, vis_calc):
     """
     Führt den Gauß-Algorithmus für zwei Ebenen durch und bestimmt ihre Lagebeziehung.
 
@@ -316,10 +318,6 @@ def calc_gauss(e1, e2, vis_calc):
     """
 
     steps = "\n\n=== Gauß-Berechnung für zwei Ebenen ===\n"
-
-     # Koeffizienten der Ebenen als Listen
-    row1 = [e1[0], e1[1], e1[2], e1[3]]
-    row2 = [e2[0], e2[1], e2[2], e2[3]]
 
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="(1) Ausgangssystem:")
