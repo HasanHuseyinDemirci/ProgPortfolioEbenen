@@ -1,6 +1,6 @@
 from main import *
 
-VIS_CALC = True
+VIS_CALC = False
 NAME_INPUT_FILE = "test_ebenen.csv"
 NAME_OUTPUT_FILE = "output.txt"
 
@@ -308,4 +308,3 @@ if __name__ == "__main__":
     format_system_state_test()
     det2x2_test()
     save_output_in_file_test()
-
