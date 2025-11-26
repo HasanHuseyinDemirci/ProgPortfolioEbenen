@@ -93,6 +93,7 @@ def input_plane_terminal():
         for i in range(len(list_plane)):
 
             value = ask_user_for_values(list_plane_index[i])
+            value = value.replace(",", ".") # Kommazahlen (deutsche Eingabe wie 2,5) in Punktnotation (2.5) umwandeln
             list_plane[i] = float(value)
 
         if is_valid_plane(list_plane):
@@ -163,8 +164,8 @@ def validate_csv_planes(reader):
 
     if len(index_allowed) <2:
         print("\nDie CSV-Datei muss mindestens zwei Ebenen enthalten.")
-        return False
-    return total_rows,index_allowed
+        return None, None
+    return total_rows, index_allowed
 
 def load_csv_file(path):
     """
@@ -217,7 +218,7 @@ def input_plane_csv():
     
     validated = validate_csv_planes(reader)
 
-    if validated is False:
+    if validated == (None, None):
         return None, None
     
     total_rows, index_allowed = validated
@@ -326,7 +327,7 @@ def calc_gauss(row1, row2, vis_calc):
     calc_steps: str – Formatierte Rechenschritte oder "" (wenn vis_calc False ist).
     """
 
-    steps = "\n\n=== Gauß-Berechnung für zwei Ebenen ===\n"
+    steps = "\n\n======= Gauß-Berechnung für zwei Ebenen =======\n"
 
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="(1) Ausgangssystem:")
@@ -446,6 +447,9 @@ def calc_gauss(row1, row2, vis_calc):
 
         result = f"Schnittgerade (Parametergleichung):\n    {equation}\n"
 
+        
+    steps += "\nErgebnis: "
+    
     return result, steps if vis_calc else "" # Rechenschritte nur zurückgeben, falls vis_calc == True
 
 

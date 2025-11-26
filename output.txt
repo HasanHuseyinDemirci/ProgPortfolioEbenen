@@ -1,1 +1,1 @@
-Die Ebenen sind echt parallel und haben keine Schnittmenge.
+Schnittgerade (Parametergleichung): g(t) = (7, 0, -4) + t · (-2, 1, 0)

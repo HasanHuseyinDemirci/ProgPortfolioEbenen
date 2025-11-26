@@ -1,6 +1,6 @@
 from main import *
 
-VIS_CALC = False
+VIS_CALC = True
 NAME_INPUT_FILE = "test_ebenen.csv"
 NAME_OUTPUT_FILE = "output.txt"
 
@@ -204,11 +204,9 @@ def calc_gauss_test():
             print(f"Erwartet: {expected_result}, erhalten: {result}")
             print(f"E1: {e1}\nE2: {e2}\n")
    
-
-
-        if VIS_CALC: # Optional: Rechenschritte anzeigen
-            print(result)
+        if VIS_CALC: # Optional: Rechenschritte anzeigen   
             print(steps) 
+            print(result)
 
 def format_system_state_test():
     """
