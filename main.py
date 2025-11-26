@@ -51,7 +51,8 @@ def is_valid_plane(list_plane):
     
 def row_to_str(list_plane,index=None):
     """    
-    Formatiert eine Ebenengleichung in einen String und gibt diesen zurück.
+    Formatiert die Koeffizienten einer Ebene der Form [a, b, c, d] zu einer lesbaren 
+    Gleichung ax +/- by +/- cz = d. Optional kann ein Index mit ausgegeben werden.
     """
     x, y, z, d = list_plane
     y_sign = '-' if y < 0 else '+'
@@ -85,7 +86,7 @@ def print_csv_rows(rows):
 
 def input_plane_terminal():
     """
-    Gibt fertige Liste [x, y, z, d] mit Ebenenkoeffizienten zurück
+    Liest im Terminal vier Koeffizienten einer Ebene ein und gibt die Liste [a, b, c, d] zurück.
     """
     while True:
         list_plane = [0, 0, 0, 0]
@@ -99,18 +100,18 @@ def input_plane_terminal():
             if ask_user_bool_question(f"Ist dies deine Ebene?:\n{row_to_str(list_plane)}\n"):
                 return list_plane
             else:
-                print("Beginnen wir vonvorne")
+                print("Beginnen wir von vorne!")
                 continue
         else:
             print("\nBeginnen wir von vorne!")
             continue
 
-def ask_user_for_values(koef):
+def ask_user_for_values(coefficient):
     """
     Liest einen einzelnen Koeffizienten ein und gibt diesen zurück
     """
     while True:
-        value = input(f"\nBitte gib einen gültigen Wert für {koef} an ")
+        value = input(f"\nBitte gib einen gültigen Wert für {coefficient} an ")
 
         if is_valid_number(value):
             return value
@@ -121,7 +122,7 @@ def ask_user_for_values(koef):
 def valid_rows(row, index_allowed, total_rows, index):
     """
     Speichert und formatiert eine gültige CSV-Zeile in total_rows und deren Index in index_allowed,
-    und gibt total_rows und index_allowed zurück
+    und gibt beide Listen zurück.
     """
     index_allowed.append(index+1)
     total_rows.append(row_to_str(row, index))
@@ -130,7 +131,7 @@ def valid_rows(row, index_allowed, total_rows, index):
 def invalid_rows(rows_unallowed, index_unallowed, total_rows, index):
     """
     Speichert und formatiert eine ungültige CSV-Zeile in total_rows und deren Index in index_unallowed,
-    und gibt total_rows und index_unallowed zurück
+    und gibt beide Listen zurück.
     """
     rows_unallowed.append(f"(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
     index_unallowed.append(index+1)
@@ -179,9 +180,9 @@ def choose_two_planes(index_allowed):
     Gibt die gewählten Indizes zurück.
     """
     while True:
-        choice = input("Bitte gib zwei Ebenen mit einem , voneinaner getrennt ein: ").split(",")
+        choice = input("Bitte gib zwei Ebenen mit einem \",\" voneinander getrennt ein: ").split(",")
         if len(choice) != 2:
-            print("\nBitte genau zwei Ebenennummern angeben.")
+            print("\nWähle bitte genau zwei Ebenen aus.")
             continue
         if not all(c.strip().isdigit() for c in choice):
             print("\nEs sind nur Zahlen erlaubt")
@@ -191,7 +192,7 @@ def choose_two_planes(index_allowed):
         choice[1] = int(choice[1])
         
         if choice[0] == choice[1]:
-            print("\nDu kannst nicht die selben ebenen wählen")
+            print("\nDu kannst nicht dieselben Ebenen wählen")
             continue
 
         if not (choice[0] in index_allowed and choice[1] in index_allowed):
@@ -242,7 +243,7 @@ def read_input():
 
     greet_user()
     show_calculation_steps = ask_user_bool_question("Willst du die Rechenschritte im Terminal anzeigen ")
-    save_output_in_file = ask_user_bool_question("Willst du das Ergebnis in einer Text Datei speichern ")
+    save_output_in_file = ask_user_bool_question("Willst du das Ergebnis in einer Textdatei speichern ")
 
 
     while True:
@@ -301,7 +302,7 @@ def format_system_state(row1, row2, header=None):
     return lines
 
 
-def det2(a, b, c, d): 
+def det2x2(a, b, c, d): 
     """
     Berechnet die Determinante einer 2x2-Matrix und gibt diese zurück:
         | a  b |
@@ -366,7 +367,7 @@ def calc_gauss(row1, row2, vis_calc):
     # Fall 1: 0x + 0y + 0z = d (d != 0) -> Widerspruch -> keine Lösung -> echt parallel
     if a2 == 0 and b2 == 0 and c2 == 0 and d2 != 0:
         steps += (
-            f"Zweite Zeile: 0·x + 0·y + 0·z = {d1:g} ({d1:g} != 0)\n"
+            f"Zweite Zeile: 0·x + 0·y + 0·z = {d2:g} ({d2:g} != 0)\n"
         )
         result = "Die Ebenen sind echt parallel und haben keine Schnittmenge."
 
@@ -382,9 +383,9 @@ def calc_gauss(row1, row2, vis_calc):
         
         # 2×2-Determinanten der Koeffizientenmatrix
         # Sie entscheiden, welche Variable frei gewählt werden kann.
-        D_xy = det2(a1, b1, a2, b2)   # Determinante des Systems in x,y
-        D_xz = det2(a1, c1, a2, c2)   # Determinante des Systems in x,z
-        D_yz = det2(b1, c1, b2, c2)   # Determinante des Systems in y,z
+        D_xy = det2x2(a1, b1, a2, b2)   # Determinante des Systems in x,y
+        D_xz = det2x2(a1, c1, a2, c2)   # Determinante des Systems in x,z
+        D_yz = det2x2(b1, c1, b2, c2)   # Determinante des Systems in y,z
 
         # Fall 1:
         # D_xy != 0 -> Das 2×2-System in x und y ist eindeutig lösbar
@@ -394,13 +395,13 @@ def calc_gauss(row1, row2, vis_calc):
 
             # Für t = 0 erhalten wir den Stützpunkt:
             # (x0, y0, z0)
-            x0 = det2(d1, b1, d2, b2) / D_xy
-            y0 = det2(a1, d1, a2, d2) / D_xy
+            x0 = det2x2(d1, b1, d2, b2) / D_xy
+            y0 = det2x2(a1, d1, a2, d2) / D_xy
             z0 = 0.0
 
             # Für t != 0 berechnen wir den Richtungsvektor (vx, vy, vz)
-            vx = -det2(c1, b1, c2, b2) / D_xy
-            vy = -det2(a1, c1, a2, c2) / D_xy
+            vx = -det2x2(c1, b1, c2, b2) / D_xy
+            vy = -det2x2(a1, c1, a2, c2) / D_xy
             vz = 1.0  # z = t
 
         # Fall 2:
@@ -408,13 +409,13 @@ def calc_gauss(row1, row2, vis_calc):
         elif D_xz != 0:
             steps += "Wir wählen y als Parameter: y = t und lösen das 2x2-System in x und z.\n"
 
-            x0 = det2(d1, c1, d2, c2) / D_xz
+            x0 = det2x2(d1, c1, d2, c2) / D_xz
             y0 = 0.0
-            z0 = det2(a1, d1, a2, d2) / D_xz
+            z0 = det2x2(a1, d1, a2, d2) / D_xz
 
-            vx = -det2(b1, c1, b2, c2) / D_xz
+            vx = -det2x2(b1, c1, b2, c2) / D_xz
             vy = 1.0  # y = t
-            vz = -det2(a1, b1, a2, b2) / D_xz
+            vz = -det2x2(a1, b1, a2, b2) / D_xz
 
         # Fall 3:
         # D_yz != 0 -> x = t ist sinnvoll
@@ -422,12 +423,12 @@ def calc_gauss(row1, row2, vis_calc):
             steps += "Wir wählen x als Parameter: x = t und lösen das 2x2-System in y und z.\n"
 
             x0 = 0.0
-            y0 = det2(d1, c1, d2, c2) / D_yz
-            z0 = det2(b1, d1, b2, d2) / D_yz
+            y0 = det2x2(d1, c1, d2, c2) / D_yz
+            z0 = det2x2(b1, d1, b2, d2) / D_yz
 
             vx = 1.0  # x = t
-            vy = -det2(a1, c1, a2, c2) / D_yz
-            vz = -det2(b1, a1, b2, a2) / D_yz  
+            vy = -det2x2(a1, c1, a2, c2) / D_yz
+            vz = -det2x2(b1, a1, b2, a2) / D_yz  
 
         else:
             # Theoretisch dürfte dieser Fall bei ind = 2 nicht auftreten

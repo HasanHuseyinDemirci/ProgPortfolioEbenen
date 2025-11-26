@@ -1,6 +1,6 @@
 from main import calc_gauss
 from main import format_system_state
-from main import det2
+from main import det2x2
 from main import save_output_in_file
 
 
@@ -137,7 +137,7 @@ def det2_test():
         (0,0.1,-10,2,1)
     ]
     for a,b,c,d,expected_value in tests:
-        result = det2(a,b,c,d)
+        result = det2x2(a,b,c,d)
         if result != expected_value:
             print(f"Fehler: Inkorrekte Determinante.\nErwartet: {expected_value}\nErhalten: {result}.")
 
