@@ -246,8 +246,8 @@ def read_input():
     """
 
     greet_user()
-    show_calculation_steps = ask_user_bool_question("Willst du die Rechenschritte im Terminal anzeigen ")
-    save_output_in_file = ask_user_bool_question("Willst du das Ergebnis in einer Textdatei speichern ")
+    show_calculation_steps = ask_user_bool_question("Willst du die Rechenschritte im Terminal anzeigen? ")
+    save_output_in_file = ask_user_bool_question("Willst du das Ergebnis in einer Textdatei speichern? ")
 
 
     while True:
