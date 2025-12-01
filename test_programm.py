@@ -193,13 +193,13 @@ def calc_gauss_test():
          "    g(t) = (0, 0, 2) + t · (1, -0, -0)\n"),
 ]
 
-    for e1, e2, expected_result in tests:
-        result, steps  = calc_gauss(e1, e2, VIS_CALC)
+    for p1, p2, expected_result in tests:
+        result, steps  = calc_gauss(p1, p2, VIS_CALC)
 
-        if result!= expected_result:
-            print("Fehler: Falscher Indikator!")
+        if result != expected_result:
+            print("Fehler beim Ausführen des Gauss-Algorithmus!")
             print(f"Erwartet: {expected_result}, erhalten: {result}")
-            print(f"E1: {e1}\nE2: {e2}\n")
+            print(f"E1: {p1}\nE2: {p2}\n")
    
         if VIS_CALC: # Optional: Rechenschritte anzeigen   
             print(steps) 
@@ -246,9 +246,9 @@ def format_system_state_test():
     ),
     ]
 
-    for e1, e2, header, expected in tests:
+    for p1, p2, header, expected in tests:
 
-        result = format_system_state(e1, e2, header)
+        result = format_system_state(p1, p2, header)
 
         if result != expected:
             print("Fehler: Falsche Darstellung des LGS!")
@@ -263,13 +263,15 @@ def det2x2_test():
     und meldet Abweichungen auf der Konsole.
     """
     tests = [
+        # (a, b, c, d, exp_det)
         (1,1,1,1,0),
         (4,1,1,4,15),
-        (0,0,0,0,0),
-        (0,0.1,-10,2,1)
+        (0, 0, 0, 0, 0),
+        (0, 0.1, -10, 2, 1)
     ]
     for a,b,c,d,expected_value in tests:
         result = det2x2(a,b,c,d)
+
         if result != expected_value:
             print(f"Fehler: Inkorrekte Determinante.\nErwartet: {expected_value}\nErhalten: {result}.")
 
@@ -278,9 +280,12 @@ def save_output_in_file_test():
     Testet save_output_in_file(), indem mehrere Beispieltexte
     gespeichert und anschließend korrekt aus der Datei ausgelesen werden.
     """
-    tests = ["Die Ebenen sind identisch und haben unendlich viele Schnittpunkte.",
-             "Die Ebenen sind echt parallel und haben keine Schnittmenge.",
-             "Schnittgerade (Parametergleichung): g(t) = (7, 0, -4) + t · (-2, 1, 0)"]
+    tests = [
+        "Die Ebenen sind identisch und haben unendlich viele Schnittpunkte.",
+        "Die Ebenen sind echt parallel und haben keine Schnittmenge.",
+        "Schnittgerade (Parametergleichung): g(t) = (7, 0, -4) + t · (-2, 1, 0)"
+            ]
+    
     for test in tests:
         save_output_in_file(test)
         try:
