@@ -11,7 +11,7 @@ def test_is_valid_number():
         ("inf", False),
         ("-inf", False),
         ("NaN", False),
-        ("0", True),
+        ("C3-PO", False),
         ("-1", True),
         ("2", True),
         ("Andreas", False),
@@ -74,24 +74,22 @@ def test_valid_rows():
 
 def test_invalid_rows():
     tests = [
-        # (index, expected_index_list, expected_string)
-        (1, [2], "(X)  Zeile 2 in der CSV-Datei ist ungültig und wird übersprungen."),
-        (4, [5], "(X)  Zeile 5 in der CSV-Datei ist ungültig und wird übersprungen.")
+        # (index, erwartete Ausgabestr)
+        (1, "(X)  Zeile 2 in der CSV-Datei ist ungültig und wird übersprungen."),
+        (4, "(X)  Zeile 5 in der CSV-Datei ist ungültig und wird übersprungen.")
     ]
 
-    for index, expected_idx_list, expected_str in tests:
-        rows_unallowed = []
-        index_unallowed = []
+    for index, expected_str in tests:
         total_rows = []
 
-        rows_res, idx_res, tot_res = invalid_rows(rows_unallowed, index_unallowed, total_rows, index)
+        result = invalid_rows(total_rows, index)
 
-        if idx_res != expected_idx_list or rows_res != [expected_str] or tot_res != [expected_str]:
+        if result != [expected_str]:
             print(
                 f"FAIL: invalid_rows(index={index}) -> "
-                f"index_unallowed={idx_res}, rows_unallowed={rows_res}, total_rows={tot_res}, "
-                f"erwartet: {expected_idx_list}, [{expected_str}]"
+                f"{result}, erwartet: [{expected_str}]"
             )
+
 
 def test_validate_csv_planes():
     """Testet validate_csv_planes() als Gesamtkontrolle der CSV-Prüfung.
@@ -125,9 +123,8 @@ def test_validate_csv_planes():
         if index_allowed != expected_index_allowed or len(total_rows) != len(rows):
             print(
                 f"FAIL: validate_csv_planes() -> "
-                f"index_allowed={index_allowed}, total_rows_len={len(total_rows)}, "
-                f"erwartet: index_allowed={expected_index_allowed}, "
-                f"total_rows_len={len(rows)}"
+                f"index_allowed = {index_allowed} "
+                f"erwartet: index_allowed={expected_index_allowed}"
             )
 
 def test_load_csv_file():

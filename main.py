@@ -154,7 +154,7 @@ def validate_csv_planes(reader):
             if is_valid_plane(float_row):
                 raise ValueError("Ungültige Zeile")
 
-            index_allowed, total_rows = valid_rows(float_row,index_allowed, total_rows, index)
+            index_allowed, total_rows = valid_rows(float_row, index_allowed, total_rows, index)
         except ValueError:
            total_rows = invalid_rows(total_rows, index)
 
@@ -487,3 +487,4 @@ if __name__ == "__main__":
 
     if file_save:
         save_output_in_file(result)
+
