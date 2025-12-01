@@ -28,8 +28,6 @@ def is_valid_number(value):
     Prüft, ob eine Eingabe eine valide Zahl ist.
     Gibt einen boolschen Wert zurück
     """
-    if  value == "":
-        return False
     try:
         if math.isfinite(float(value)): 
             return True
@@ -48,7 +46,7 @@ def is_valid_plane(list_plane):
     else:
         return True
     
-def row_to_str(list_plane,index=None):
+def row_to_str(list_plane, index=None):
     """    
     Formatiert die Koeffizienten einer Ebene der Form [a, b, c, d] zu einer lesbaren 
     Gleichung ax +/- by +/- cz = d. Optional kann ein Index mit ausgegeben werden.
@@ -93,7 +91,7 @@ def input_plane_terminal():
         for i in range(len(list_plane)):
 
             value = ask_user_for_values(list_plane_index[i])
-            list_plane[i] = float(value)
+            list_plane[i] = value
 
         if is_valid_plane(list_plane):
             if ask_user_bool_question(f"Ist dies deine Ebene?:\n{row_to_str(list_plane)}\n"):
@@ -113,7 +111,7 @@ def ask_user_for_values(coefficient):
         value = input(f"\nBitte gib einen gültigen Wert für {coefficient} an ")
         value = value.replace(",", ".") # Kommazahlen (deutsche Eingabe wie 2,5) in Punktnotation (2.5) umwandeln
         if is_valid_number(value):
-            return value
+            return float(value)
             
         print("\nBitte erneut versuchen!")
     
