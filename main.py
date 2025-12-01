@@ -93,7 +93,6 @@ def input_plane_terminal():
         for i in range(len(list_plane)):
 
             value = ask_user_for_values(list_plane_index[i])
-            value = value.replace(",", ".") # Kommazahlen (deutsche Eingabe wie 2,5) in Punktnotation (2.5) umwandeln
             list_plane[i] = float(value)
 
         if is_valid_plane(list_plane):
@@ -112,7 +111,7 @@ def ask_user_for_values(coefficient):
     """
     while True:
         value = input(f"\nBitte gib einen gültigen Wert für {coefficient} an ")
-
+        value = value.replace(",", ".") # Kommazahlen (deutsche Eingabe wie 2,5) in Punktnotation (2.5) umwandeln
         if is_valid_number(value):
             return value
             
