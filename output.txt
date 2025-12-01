@@ -1,1 +1,2 @@
-Schnittgerade (Parametergleichung): g(t) = (7, 0, -4) + t · (-2, 1, 0)
+Schnittgerade (Parametergleichung):
+    g(t) = (2.9321, 0, -0.0432099) + t · (-0, 1, -0)

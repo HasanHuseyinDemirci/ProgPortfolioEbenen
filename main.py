@@ -125,51 +125,51 @@ def valid_rows(row, index_allowed, total_rows, index):
     total_rows.append(row_to_str(row, index))
     return index_allowed, total_rows
 
-def invalid_rows(rows_unallowed, index_unallowed, total_rows, index):
+def invalid_rows(total_rows, index):
     """
-    Speichert und formatiert eine ungültige CSV-Zeile in total_rows und deren Index in index_unallowed,
-    und gibt beide Listen zurück.
+    Speichert und formatiert eine ungültige CSV-Zeile in total_rows und gibt diese Liste zurück.
     """
-    rows_unallowed.append(f"(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
-    index_unallowed.append(index+1)
     total_rows.append(f"(X)  Zeile {index + 1} in der CSV-Datei ist ungültig und wird übersprungen.")
-    return rows_unallowed, index_unallowed, total_rows
+    return total_rows
 
 def validate_csv_planes(reader):
     """
     Prüft alle Zeilen der CSV-Datei auf Anzahl und Zahlformat.
     Gib total_rows, index_allowed zurück
     """
-    rows_unallowed = []
-    index_unallowed = []
+
     index_allowed = []
     total_rows = []
+
     for index, row in enumerate(reader):
         try:
             if len(row) != 4:
                 raise ValueError("Ungültige Zeile")
-            float_row = [float(cell) for cell in row]
-            if not all(math.isfinite(val) for val in float_row):
+            
+            float_row = [float(coef) for coef in row]
+
+            if not all(is_valid_number(val) for val in float_row):
                 raise ValueError("Ungültige Zeile")
             
-            if float_row[0] == 0 and float_row[1] == 0 and float_row[2] == 0:
+            if is_valid_plane(float_row):
                 raise ValueError("Ungültige Zeile")
 
-            index_allowed,total_rows = valid_rows(float_row,index_allowed, total_rows, index)
+            index_allowed, total_rows = valid_rows(float_row,index_allowed, total_rows, index)
         except ValueError:
-            rows_unallowed, index_unallowed, total_rows = invalid_rows(rows_unallowed, index_unallowed,total_rows, index)
+           total_rows = invalid_rows(total_rows, index)
 
-    if len(index_allowed) <2:
+    if len(index_allowed) < 2:
         print("\nDie CSV-Datei muss mindestens zwei Ebenen enthalten.")
         return None, None
+    
     return total_rows, index_allowed
 
-def load_csv_file(path):
+def load_csv_file(path=NAME_INPUT_FILE):
     """
     Lädt CSV-Datei und gibt Zeilen zurück.
     """
     try:
-        with open(path, mode="r", encoding="utf-8")as f:
+        with open(path, mode="r", encoding="utf-8") as f:
             return list(csv.reader(f))
     except Exception as e: 
         print(f"\nFehler beim Öffnen der Datei: {e}")
@@ -185,6 +185,7 @@ def choose_two_planes(index_allowed):
         if len(choice) != 2:
             print("\nWähle bitte genau zwei Ebenen aus.")
             continue
+
         if not all(c.strip().isdigit() for c in choice):
             print("\nEs sind nur Zahlen erlaubt")
             continue
@@ -207,7 +208,7 @@ def input_plane_csv():
     Liest Ebenenkoeffizienten aus einer CSV-Datei und validiert die Daten.
     Gibt Ebenen als Listen [a, b, c, d] zurück
     """
-    reader = load_csv_file(NAME_INPUT_FILE)
+    reader = load_csv_file()
 
     if reader is None:
         print("\n Fehler: CSV-Datei konnte  nicht geladen werden.")
@@ -224,9 +225,9 @@ def input_plane_csv():
     while True:
         choice_1, choice_2 = choose_two_planes(index_allowed)
         if ask_user_bool_question(f"\nDu hast Ebene {choice_1} und Ebene {choice_2} angegeben stimmt dies? "):
-            e1 = [float(x) for x in reader[choice_1-1]]
-            e2 = [float(x) for x in reader[choice_2-1]]
-            return e1, e2
+            p1 = [float(x) for x in reader[choice_1-1]]
+            p2 = [float(x) for x in reader[choice_2-1]]
+            return p1, p2
         else:
             print("\nBitte erneut versuchen.")
 
@@ -252,15 +253,15 @@ def read_input():
 
         if question_terminal_csv in ANSWER_TERMINAL:
             print("Beginnen wir mit der ersten Ebene:")
-            e1 = input_plane_terminal()
+            p1 = input_plane_terminal()
 
             print("Jetzt die zweite Ebene:")
-            e2 = input_plane_terminal()
+            p2 = input_plane_terminal()
             break
 
         elif question_terminal_csv in ANSWER_CSV:
-            e1, e2 = input_plane_csv()
-            if e1 is None or e2 is None:
+            p1, p2 = input_plane_csv()
+            if p1 is None or p2 is None:
                 print("\nDie von dir übergebene hat nicht genug Einträge")
                 continue
             break
@@ -269,7 +270,7 @@ def read_input():
             print("Ungültige Eingabe. Bitte 'T' für Terminal oder 'CSV' für CSV-Datei eingeben.")
             continue
 
-    return e1, e2, show_calculation_steps, save_output_in_file 
+    return p1, p2, show_calculation_steps, save_output_in_file 
 
 
 def format_system_state(row1, row2, header=None):
@@ -316,7 +317,7 @@ def calc_gauss(row1, row2, vis_calc):
     """
     Führt den Gauß-Algorithmus für zwei Ebenen durch und bestimmt ihre Lagebeziehung.
 
-    e1, e2: Sequenzen der Form [a, b, c, d] mit ax + by + cz = d.
+    row1, row2: Sequenzen der Form [a, b, c, d] mit ax + by + cz = d.
     vis_calc: bool – Wenn True, werden die Rechenschritte als Text mit zurückgegeben.
 
     Rückgabe:
@@ -329,9 +330,9 @@ def calc_gauss(row1, row2, vis_calc):
     # Ausgangssystem speichern
     steps += format_system_state(row1, row2, header="(1) Ausgangssystem:")
 
-    # 1. Gauß-Schritt: Pivot suchen und zweite Zeile eliminieren
+    # 1. Gauß-Schritt: führendes Element suchen und zweite Zeile eliminieren
 
-    # Pivot-Spalte bestimmen: zuerst x, dann y, sonst z
+    # führendes Element-Spalte bestimmen: zuerst x, dann y, sonst z
     if row1[0] != 0 or row2[0] != 0: # 0 = x, 1 = y, 2 = z
         pivot_index = 0
     elif row1[1] != 0 or row2[1] != 0:
@@ -342,13 +343,13 @@ def calc_gauss(row1, row2, vis_calc):
     pivot_name = ["x", "y", "z"][pivot_index]
     steps += f"(2) Führendes Element: Spalte '{pivot_name}'\n"
 
-    # Falls Pivot in Zeile 1 = 0 -> Zeilen tauschen
+    # Falls führendes Element in Zeile 1 = 0 -> Zeilen tauschen
     if row1[pivot_index] == 0 and row2[pivot_index] != 0:
         steps += (f"Zeilen werden vertauscht, da das führende Element in Zeile 1 = 0 ist (Spalte {pivot_name}).\n")
         row1, row2 = row2, row1
         steps += format_system_state(row1, row2, header="Nach Zeilenvertauschung:")
 
-     # Faktor k zur Elimination berechnen
+    # Faktor k zur Elimination berechnen
     k = row2[pivot_index] / row1[pivot_index]
     steps += f"    Zeilenoperation: R2 := R2 - ({k:g}) · R1\n"
 
@@ -476,10 +477,10 @@ def save_output_in_file(result):
 
 if __name__ == "__main__":
     # Eingabedaten einlesen (entweder CLI oder Datei)
-    e1, e2, vis_calc, file_save = read_input()
+    p1, p2, vis_calc, file_save = read_input()
 
     # Gauß-Berechnung ausführen
-    result, calc_steps = calc_gauss(e1, e2, vis_calc)
+    result, calc_steps = calc_gauss(p1, p2, vis_calc)
 
     # Ergebnis ausgeben
     output_result(result, calc_steps)
